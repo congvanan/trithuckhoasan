@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MyAbpApp.Application.Contracts/MyAbpApp.Application.Contracts.csproj" />
+    <Project Path="src/MyAbpApp.Application/MyAbpApp.Application.csproj" />
+    <Project Path="src/MyAbpApp.AuthServer/MyAbpApp.AuthServer.csproj" />
+    <Project Path="src/MyAbpApp.Blazor.Client/MyAbpApp.Blazor.Client.csproj" />
+    <Project Path="src/MyAbpApp.Blazor.Server.Tiered/MyAbpApp.Blazor.Server.Tiered.csproj" />
+    <Project Path="src/MyAbpApp.Blazor.Server/MyAbpApp.Blazor.Server.csproj" />
+    <Project Path="src/MyAbpApp.Blazor.WebApp.Client/MyAbpApp.Blazor.WebApp.Client.csproj" />
+    <Project Path="src/MyAbpApp.Blazor.WebApp.Tiered.Client/MyAbpApp.Blazor.WebApp.Tiered.Client.csproj" />
+    <Project Path="src/MyAbpApp.Blazor.WebApp.Tiered/MyAbpApp.Blazor.WebApp.Tiered.csproj" />
+    <Project Path="src/MyAbpApp.Blazor.WebApp/MyAbpApp.Blazor.WebApp.csproj" />
+    <Project Path="src/MyAbpApp.Blazor/MyAbpApp.Blazor.csproj" />
+    <Project Path="src/MyAbpApp.DbMigrator/MyAbpApp.DbMigrator.csproj" />
+    <Project Path="src/MyAbpApp.Domain.Shared/MyAbpApp.Domain.Shared.csproj" />
+    <Project Path="src/MyAbpApp.Domain/MyAbpApp.Domain.csproj" />
+    <Project Path="src/MyAbpApp.EntityFrameworkCore/MyAbpApp.EntityFrameworkCore.csproj" />
+    <Project Path="src/MyAbpApp.HttpApi.Client/MyAbpApp.HttpApi.Client.csproj" />
+    <Project Path="src/MyAbpApp.HttpApi.Host/MyAbpApp.HttpApi.Host.csproj" />
+    <Project Path="src/MyAbpApp.HttpApi.Host/MyAbpApp.HttpApi.Host.csproj" />
+    <Project Path="src/MyAbpApp.HttpApi/MyAbpApp.HttpApi.csproj" />
+    <Project Path="src/MyAbpApp.MongoDB/MyAbpApp.MongoDB.csproj" />
+    <Project Path="src/MyAbpApp.Web.Host/MyAbpApp.Web.Host.csproj" />
+    <Project Path="src/MyAbpApp.Web/MyAbpApp.Web.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/MyAbpApp.Application.Tests/MyAbpApp.Application.Tests.csproj" />
+    <Project Path="test/MyAbpApp.Domain.Tests/MyAbpApp.Domain.Tests.csproj" />
+    <Project Path="test/MyAbpApp.EntityFrameworkCore.Tests/MyAbpApp.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="test/MyAbpApp.HttpApi.Client.ConsoleTestApp/MyAbpApp.HttpApi.Client.ConsoleTestApp.csproj" />
+    <Project Path="test/MyAbpApp.MongoDB.Tests/MyAbpApp.MongoDB.Tests.csproj" />
+    <Project Path="test/MyAbpApp.TestBase/MyAbpApp.TestBase.csproj" />
+    <Project Path="test/MyAbpApp.Web.Tests/MyAbpApp.Web.Tests.csproj" />
+  </Folder>
+</Solution>

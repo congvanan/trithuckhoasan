@@ -1,0 +1,29 @@
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.env*.local
+
+# Backend
+backend/aspnet-core/src/*/bin/
+backend/aspnet-core/src/*/obj/
+backend/aspnet-core/*.user
+backend/aspnet-core/.vs/
+backend/tools/*/bin/
+backend/tools/*/obj/
+
+# Sensitive config files (contain connection strings, secrets)
+backend/**/appsettings.secrets.json
+backend/**/appsettings.json
+# Keep only Development/template appsettings
+!backend/**/appsettings.Development.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
