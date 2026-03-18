@@ -17,7 +17,7 @@ export const useTranslation = () => {
       const { data } = await abpApplicationLocalizationGet({
         query: { CultureName: 'en' },
       })
-      return data ?? null
+      return data ?? undefined
     },
   })
 }

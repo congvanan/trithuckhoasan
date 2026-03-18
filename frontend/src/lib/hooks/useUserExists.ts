@@ -29,7 +29,7 @@ export const useUserExists = ({ username }: UseUserExistsProps) => {
             userName: username,
           },
         })
-        return data ?? null
+        return data ?? undefined
       } catch (error) {
         console.error('Error checking if user exists:', error)
         return null

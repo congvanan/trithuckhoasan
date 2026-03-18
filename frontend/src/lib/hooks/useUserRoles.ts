@@ -60,7 +60,7 @@ export const useUserRoles = ({ userId }: UseUserRolesProps) => {
         throw new Error('User roles not found')
       }
 
-      return data ?? null
+      return data ?? undefined
     },
     enabled: !!userId,
     retry: (failureCount, error) => {

@@ -23,7 +23,7 @@ export const useProfile = (): UseQueryResult<ProfileDto | undefined, unknown> =>
         throw new Error('Profile not found')
       }
 
-      return data ?? null
+      return data ?? undefined
     },
     retry: (failureCount, error) => {
       // Don't retry if it's a 404 (profile not found)

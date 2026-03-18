@@ -36,7 +36,7 @@ export const useRoles = (
           SkipCount: skip,
         },
       })
-      return data ?? null
+      return data ?? undefined
     },
   })
 }

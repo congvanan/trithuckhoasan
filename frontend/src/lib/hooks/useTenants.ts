@@ -36,7 +36,7 @@ export const useTenants = (
           Sorting: sorting,
         },
       })
-      return data ?? null
+      return data ?? undefined
     },
   })
 }

@@ -19,7 +19,7 @@ export const useFeatures = (
       const { data } = await featuresGet({
         query: { providerName, providerKey },
       })
-      return data ?? null
+      return data ?? undefined
     },
   })
 }

@@ -15,7 +15,7 @@ export const useEmailing = (): UseQueryResult<EmailSettingsDto | undefined, unkn
     queryKey: [QueryNames.GetEmailing],
     queryFn: async () => {
       const { data } = await emailSettingsGet()
-      return data ?? null
+      return data ?? undefined
     },
   })
 }
