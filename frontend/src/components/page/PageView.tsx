@@ -9,14 +9,14 @@
 
 import { VoloCmsKitContentsPageDto } from '@/client'
 import { PageComments } from '@/components/comment/PageComments'
-import { htmlToPuckData, isPuckData } from '@/components/puck'
+import { ensureValidPuckData, htmlToPuckData, isPuckData } from '@/components/puck'
 import { config } from '@/components/puck/config'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Render } from '@measured/puck'
 import { AlertTriangle, FileText, RefreshCw } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 export type PageViewProps = {
   page: VoloCmsKitContentsPageDto
@@ -124,52 +124,46 @@ export const PageView = ({ page }: PageViewProps) => {
     }
   }, [page.script])
 
-  // Convert content to Puck data if it's HTML
-  const getPuckData = () => {
+  // Convert content to Puck data if it's HTML (useMemo to avoid setState during render)
+  const { puckData, parsedContentError } = useMemo(() => {
     if (!page.content) {
-      setContentError('No content available')
-      return null
+      return { puckData: null, parsedContentError: 'No content available' }
     }
 
     let parsedContent = page.content
 
-    // Try to parse as JSON if it's a string
     if (typeof page.content === 'string') {
       try {
         parsedContent = JSON.parse(page.content)
-      } catch (error) {
-        // If it's not valid JSON, treat it as HTML
+      } catch {
         try {
-          return htmlToPuckData(page.content)
+          return { puckData: htmlToPuckData(page.content), parsedContentError: null }
         } catch (htmlError) {
           console.error('Error converting HTML to Puck data:', htmlError)
-          setContentError('Failed to process page content')
-          return null
+          return { puckData: null, parsedContentError: 'Failed to process page content' }
         }
       }
     }
 
-    // Check if the parsed content is Puck data
     if (isPuckData(parsedContent)) {
-      return parsedContent
+      return { puckData: parsedContent, parsedContentError: null }
     }
 
-    // If it's not Puck data, convert HTML to Puck data
     if (typeof page.content === 'string') {
       try {
-        return htmlToPuckData(page.content)
+        return { puckData: htmlToPuckData(page.content), parsedContentError: null }
       } catch (htmlError) {
         console.error('Error converting HTML to Puck data:', htmlError)
-        setContentError('Failed to process page content')
-        return null
+        return { puckData: null, parsedContentError: 'Failed to process page content' }
       }
     }
 
-    setContentError('Unsupported content format')
-    return null
-  }
+    return { puckData: null, parsedContentError: 'Unsupported content format' }
+  }, [page.content])
 
-  const puckData = getPuckData()
+  useEffect(() => {
+    setContentError(parsedContentError)
+  }, [parsedContentError])
 
   // Handle rendering errors
   const handleRenderError = (error: Error) => {
@@ -224,7 +218,7 @@ export const PageView = ({ page }: PageViewProps) => {
           <div>
             {/* Try to render with Puck */}
             <ErrorBoundary onError={handleRenderError}>
-              <Render config={config} data={puckData as any} />
+              <Render config={config} data={ensureValidPuckData(puckData) as any} />
             </ErrorBoundary>
           </div>
         ) : (

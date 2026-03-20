@@ -17,7 +17,6 @@
     <Project Path="src/MyAbpApp.EntityFrameworkCore/MyAbpApp.EntityFrameworkCore.csproj" />
     <Project Path="src/MyAbpApp.HttpApi.Client/MyAbpApp.HttpApi.Client.csproj" />
     <Project Path="src/MyAbpApp.HttpApi.Host/MyAbpApp.HttpApi.Host.csproj" />
-    <Project Path="src/MyAbpApp.HttpApi.Host/MyAbpApp.HttpApi.Host.csproj" />
     <Project Path="src/MyAbpApp.HttpApi/MyAbpApp.HttpApi.csproj" />
     <Project Path="src/MyAbpApp.MongoDB/MyAbpApp.MongoDB.csproj" />
     <Project Path="src/MyAbpApp.Web.Host/MyAbpApp.Web.Host.csproj" />

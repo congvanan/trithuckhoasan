@@ -223,7 +223,7 @@ export default function EditPage() {
 
     setIsSubmitting(true)
     try {
-      const apiData = { ...data }
+      const apiData = { ...data, status: 1 }
       await pageAdminUpdate({
         path: { id: pageId },
         body: apiData,

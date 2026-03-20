@@ -22,7 +22,7 @@ export const Emailing = () => {
   const [openTestEmail, setOpenTestEmail] = useState<boolean>(false)
   const { handleSubmit, register } = useForm()
 
-  const [emailSettingDto, setEmailSettingDto] = useState<EmailSettingsDto | undefined>(data)
+  const [emailSettingDto, setEmailSettingDto] = useState<EmailSettingsDto | undefined>(data ?? undefined)
 
   useEffect(() => {
     if (data) {

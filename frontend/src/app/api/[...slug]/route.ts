@@ -7,26 +7,47 @@ interface ApiError extends Error {
   status?: number
 }
 
-const getHeaders = async (): Promise<HeadersInit> => {
+const PUBLIC_API_PREFIXES = ['/api/cms-kit-public/']
+
+const isPublicEndpoint = (path: string): boolean => {
+  return PUBLIC_API_PREFIXES.some((prefix) => path.startsWith(prefix))
+}
+
+// Tenant IDs that are invalid/legacy and should NOT be forwarded to ABP
+const INVALID_TENANT_IDS = new Set(['default', '', 'null', 'undefined'])
+
+const isValidTenantId = (id: string | undefined | null): boolean => {
+  return !!id && !INVALID_TENANT_IDS.has(id)
+}
+
+const getHeaders = async (path: string): Promise<HeadersInit> => {
+  const headers = new Headers()
+  headers.set('Content-Type', 'application/json')
+
+  if (isPublicEndpoint(path)) {
+    try {
+      const session = await getSession()
+      const tenant = session.tenantId
+      if (isValidTenantId(tenant)) {
+        headers.set('__tenant', tenant!)
+      }
+    } catch {
+      console.log(`[API Proxy] PUBLIC ${path} | no session`)
+    }
+    return headers
+  }
+
   try {
     const session = await getSession()
 
-    const headers = new Headers()
-
-    // Check if we have a valid access token
     if (!session.access_token) {
-      console.error('Session debug:', {
-        isLoggedIn: session.isLoggedIn,
-        hasUserInfo: !!session.userInfo,
-        hasTenantId: !!session.tenantId,
-        sessionKeys: Object.keys(session)
-      })
       throw new Error('No access token available in session')
     }
 
     headers.set('Authorization', `Bearer ${session.access_token}`)
-    headers.set('Content-Type', 'application/json')
-    headers.set('__tenant', session.tenantId ?? '')
+    if (isValidTenantId(session.tenantId)) {
+      headers.set('__tenant', session.tenantId!)
+    }
 
     return headers
   } catch (error) {
@@ -53,7 +74,7 @@ const makeApiRequest = async (
     const path = request.nextUrl.pathname
     const url = `${EXTERNAL_API_URL}${path}${request.nextUrl.search}`
 
-    const headers = await getHeaders()
+    const headers = await getHeaders(path)
 
     const options: RequestInit = {
       method,

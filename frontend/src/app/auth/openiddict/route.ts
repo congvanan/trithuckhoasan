@@ -40,6 +40,10 @@ export async function GET(request: NextRequest) {
   session.access_token = access_token
   let claims = tokenSet.claims()!
   const { sub } = claims
+  // Extract tenant ID from ABP JWT claim 'tid' (set by ABP for tenant-level users)
+  // Always reset tenantId to clear any stale value from previous session
+  const tenantId = (claims as Record<string, unknown>)['tid'] as string | undefined
+  session.tenantId = tenantId || ''
   // call userinfo endpoint to get user info
   const userinfo = await client.fetchUserInfo(openIdClientConfig, access_token, sub)
   // store userinfo in session

@@ -42,8 +42,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse | u
     const isPublicRoute = request.nextUrl.pathname === '/' || request.nextUrl.pathname.startsWith('/pages/')
     const isSetTenantRoute = request.nextUrl.pathname === '/auth/set-tenant'
     
-    // Only redirect if tenantId is missing AND we're not already on an excluded route
-    if ((session.tenantId === undefined || session.tenantId === null || session.tenantId === '') && 
+    // Only redirect if tenantId has never been resolved (undefined/null) AND we're not on excluded route
+    // Empty string '' means "resolved as host-level, no tenant" — do NOT redirect again
+    if ((session.tenantId === undefined || session.tenantId === null) &&
         !isAuthRoute && !isPublicRoute && !isSetTenantRoute) {
       // Redirect to set-tenant page if tenantId is not present
       let redirectUrl = new URL('/auth/set-tenant', request.nextUrl.origin)

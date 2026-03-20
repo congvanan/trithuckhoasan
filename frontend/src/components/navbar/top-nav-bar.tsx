@@ -12,14 +12,12 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { DivLogo } from '@/components/div-logo'
 import { PublicMenus } from '@/config'
 import useSession from '@/useSession'
-import { 
-  CircleUser, 
-  Menu, 
-  Package2, 
-  Github, 
-  ExternalLink, 
-  BookOpen,
-  Palette,
+import {
+  ArrowRight,
+  CircleUser,
+  Menu,
+  ChevronDown,
+  LogIn,
   Settings,
   LogOut,
   User,
@@ -55,61 +53,35 @@ export default function TopNavBar() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
-            {PublicMenus.map((menu, index) => (
-              <Link
-                key={index}
-                href={menu.Link}
-                className="group relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent"
-              >
-                {menu.Name}
-                <span className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent scale-x-0 transition-transform group-hover:scale-x-100"></span>
-              </Link>
-            ))}
-            
-            {/* Additional Navigation Items */}
-            <div className="flex items-center gap-1 ml-4 pl-4 border-l">
-              <Link
-                href="https://abp-react-storybook.antosubash.com"
-                className="group flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent"
-              >
-                <Palette className="h-4 w-4" />
-                Components
-                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Link>
-              
-              <Link
-                href="https://abp-react-storybook.antosubash.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent"
-              >
-                <Palette className="h-4 w-4" />
-                Components
-                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Link>
-              
-              <Link
-                href="https://antosubash.github.io/abp-react/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent"
-              >
-                <BookOpen className="h-4 w-4" />
-                Docs
-                <ExternalLink className="h-3 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Link>
-              
-              <Link
-                href="https://github.com/antosubash/abp-react"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent"
-              >
-                <Github className="h-4 w-4" />
-                GitHub
-                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Link>
-            </div>
+            {PublicMenus.map((menu, index) =>
+              menu.submenus ? (
+                <DropdownMenu key={index}>
+                  <DropdownMenuTrigger asChild>
+                    <button className="group flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent outline-none">
+                      <menu.Icon className="h-4 w-4" />
+                      {menu.Name}
+                      <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
+                    {menu.submenus.map((sub, si) => (
+                      <DropdownMenuItem key={si} asChild>
+                        <Link href={sub.Link} className="cursor-pointer">{sub.Name}</Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link
+                  key={index}
+                  href={menu.Link}
+                  className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent"
+                >
+                  <menu.Icon className="h-4 w-4" />
+                  {menu.Name}
+                </Link>
+              )
+            )}
           </nav>
 
           {/* Mobile Menu */}
@@ -128,54 +100,30 @@ export default function TopNavBar() {
                 </div>
                 
                 {/* Mobile Navigation */}
-                <nav className="flex-1 space-y-2">
-                  <div className="space-y-1">
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-2">
-                      Navigation
-                    </h3>
-                    {PublicMenus.map((menu, index) => (
+                <nav className="flex-1 space-y-1 overflow-y-auto">
+                  {PublicMenus.map((menu, index) => (
+                    <div key={index}>
                       <Link
-                        key={index}
                         href={menu.Link}
-                        className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-accent rounded-md"
+                        className="flex items-center justify-between px-3 py-2 text-sm font-medium text-foreground hover:bg-accent rounded-md"
                       >
                         {menu.Name}
                       </Link>
-                    ))}
-                  </div>
-                  
-                  <div className="space-y-1 pt-4 border-t">
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-2">
-                      Resources
-                    </h3>
-                    <Link
-                      href="https://abp-react-storybook.antosubash.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-accent rounded-md"
-                    >
-                      <Palette className="h-4 w-4" />
-                      Components
-                    </Link>
-                    <Link
-                      href="https://antosubash.github.io/abp-react/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-accent rounded-md"
-                    >
-                      <BookOpen className="h-4 w-4" />
-                      Documentation
-                    </Link>
-                    <Link
-                      href="https://github.com/your-repo/abp-react"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-accent rounded-md"
-                    >
-                      <Github className="h-4 w-4" />
-                      GitHub
-                    </Link>
-                  </div>
+                      {menu.submenus && (
+                        <div className="ml-4 border-l pl-3 space-y-1">
+                          {menu.submenus.map((sub, si) => (
+                            <Link
+                              key={si}
+                              href={sub.Link}
+                              className="flex items-center px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
+                            >
+                              {sub.Name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </nav>
                 
                 {/* Mobile User Actions */}
@@ -266,14 +214,9 @@ export default function TopNavBar() {
             ) : (
               <div className="flex items-center gap-2">
                 <ClientLink href="/auth/login" variant="ghost" size="sm">
+                  <LogIn className="h-4 w-4 mr-1" />
                   Sign In
                 </ClientLink>
-                <Link href="/admin">
-                  <Button size="sm" className="hidden sm:flex">
-                    <Zap className="h-4 w-4 mr-2" />
-                    Get Started
-                  </Button>
-                </Link>
               </div>
             )}
           </div>

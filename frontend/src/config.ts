@@ -1,5 +1,5 @@
 // Import các icon từ thư viện lucide-react để dùng trong menu
-import { Cog, Database, FileText, Home, Menu, MessageSquare, UserRound, Users } from 'lucide-react'
+import { BookOpenCheck, Cog, Database, FileText, Home, House, Layers3, LibraryBig, Menu, MessageSquare, Microscope, Search, Sparkles, UserRound, Users } from 'lucide-react'
 import React from 'react'
 
 /**
@@ -42,14 +42,71 @@ export const clientConfig = {
  * Danh sách menu hiển thị trên trang công khai (trang chủ, landing page).
  * Mỗi mục gồm tên và đường dẫn (anchor link trong cùng trang).
  */
-export const PublicMenus: Array<{ Name: string; Link: string }> = [
+export type PublicMenuItem = {
+  Name: string
+  Link: string
+  Icon: React.ComponentType<{ className?: string }>
+  submenus?: Array<{ Name: string; Link: string }>
+}
+
+export const PublicMenus: Array<PublicMenuItem> = [
   {
-    Name: 'Features',   // Tính năng
-    Link: '#features',
+    Name: 'Trang chủ',
+    Link: '/',
+    Icon: House,
   },
   {
-    Name: 'Getting Started',  // Bắt đầu
-    Link: '#getting-started',
+    Name: 'Guidelines',
+    Link: '#guidelines',
+    Icon: BookOpenCheck,
+    submenus: [
+      { Name: 'FIGO', Link: '#figo' },
+      { Name: 'ACOG', Link: '#acog' },
+      { Name: 'ISUOG', Link: '#isuog' },
+      { Name: 'HOSREM', Link: '#hosrem' },
+    ],
+  },
+  {
+    Name: 'Nghiên cứu mới',
+    Link: '#nghien-cuu-moi',
+    Icon: Microscope,
+    submenus: [
+      { Name: 'Sản khoa', Link: '#san-khoa' },
+      { Name: 'Phụ khoa', Link: '#phu-khoa' },
+      { Name: 'Hiếm muộn', Link: '#hiem-muon' },
+      { Name: 'Siêu âm thai', Link: '#sieu-am-thai' },
+    ],
+  },
+  {
+    Name: 'Chuyên đề',
+    Link: '#chuyen-de',
+    Icon: Layers3,
+    submenus: [
+      { Name: 'Tiền sản giật', Link: '#tien-san-giat' },
+      { Name: 'Thai chậm tăng trưởng', Link: '#thai-cham-tang-truong' },
+      { Name: 'Đái tháo đường thai kỳ', Link: '#dai-thao-duong-thai-ky' },
+      { Name: 'IVF', Link: '#ivf' },
+    ],
+  },
+  {
+    Name: 'Tóm tắt AI',
+    Link: '#tom-tat-ai',
+    Icon: Sparkles,
+  },
+  {
+    Name: 'Thư viện',
+    Link: '#thu-vien',
+    Icon: LibraryBig,
+    submenus: [
+      { Name: 'Bài báo', Link: '#bai-bao' },
+      { Name: 'Khuyến cáo', Link: '#khuyen-cao' },
+      { Name: 'Slide / PDF', Link: '#slide-pdf' },
+    ],
+  },
+  {
+    Name: 'Tìm kiếm',
+    Link: '#tim-kiem',
+    Icon: Search,
   },
 ]
 

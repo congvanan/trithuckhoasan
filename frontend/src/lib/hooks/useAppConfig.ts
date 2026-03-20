@@ -34,7 +34,7 @@ export const useAppConfig = (): UseQueryResult<ApplicationConfigurationDto, unkn
           } as ApplicationConfigurationDto
         }
 
-        return data ?? undefined
+        return data ?? null
       } catch (error) {
         console.error('Error fetching app config:', error)
         // Return a minimal valid configuration on error

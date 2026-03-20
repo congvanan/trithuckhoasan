@@ -117,6 +117,7 @@ export default function CreatePage() {
         content: contentToSubmit,
         script: data.script || '',
         style: data.style || '',
+        status: 1,
       }
 
       await pageAdminCreate({

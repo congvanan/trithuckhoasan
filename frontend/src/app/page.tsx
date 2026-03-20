@@ -38,36 +38,29 @@ export default async function Home() {
               <div className="space-y-2">
                 <Badge variant="secondary" className="w-fit">
                   <Rocket className="w-3 h-3 mr-1" />
-                  Modern React Template
+                  Tin tức y khoa
                 </Badge>
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                  AbpReact
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl xl:text-5xl/none">
+                  Điều trị polyp và viêm lộ tuyến cổ tử cung trong một lần can thiệp
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  A modern, high-performance React-based frontend solution for ABP Framework applications. 
-                  Built with Next.js, TypeScript, and Tailwind CSS for optimal performance and developer experience.
+                  Ra máu bất thường giữa kỳ kinh, chị N.T.P đến BVĐK Hồng Ngọc thăm khám và bất ngờ phát hiện nhiều polyp cổ tử cung.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/admin">
+                <Link href="/pages/dieu-tri-polyp-va-viem-lo-tuyen-co-tu-cung">
                   <Button size="lg" className="w-full sm:w-auto">
-                    <Zap className="w-4 h-4 mr-2" />
-                    Get Started
-                  </Button>
-                </Link>
-                <Link href="https://abp-react-storybook.antosubash.com">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                    <Palette className="w-4 h-4 mr-2" />
-                    View Components
+                    <ArrowRight className="w-4 h-4 mr-2" />
+                    Đọc bài viết
                   </Button>
                 </Link>
               </div>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/img/macbook.jpg"
-              alt="AbpReact Dashboard"
-              className="rounded-xl shadow-2xl w-full h-auto"
+              src="/img/hero-medical.png"
+              alt="Bác sĩ thăm khám sản phụ"
+              className="rounded-xl shadow-2xl w-full h-auto object-cover"
             />
           </div>
         </div>

@@ -42,15 +42,15 @@ export async function GET() {
       // Valid string data
       session.tenantId = data.trim()
     } else {
-      // Empty object, null, undefined, or empty string - set as default tenant
-      session.tenantId = 'default'
-      console.log('Empty object or invalid tenant data received, setting default tenant')
+      // No tenant found for this host - use empty string to indicate host level
+      session.tenantId = ''
+      console.log('No tenant found for host, using host-level (empty tenantId)')
     }
   } catch (error) {
     console.error('Failed to fetch tenant GUID:', error)
-    // Set a default tenant on error to prevent infinite loops
-    session.tenantId = 'default'
-    console.log('Error occurred, setting default tenant')
+    // Use empty string (host level) on error to prevent infinite loops
+    session.tenantId = ''
+    console.log('Error occurred, using host-level (empty tenantId)')
   }
 
   // Ensure the session is saved before redirecting
