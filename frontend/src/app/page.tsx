@@ -4,18 +4,22 @@ import { Badge } from '@/components/ui/badge'
 import PublicLayout from '@/layout/public-layout'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { NewsTabs } from '@/components/sections/NewsTabs'
 import {
   Rocket,
   Shield,
-  Palette,
   Globe,
-  Code,
   CheckCircle,
   ArrowRight,
   Zap,
-  Layers,
-  Database,
-  Cpu
+  Heart,
+  Baby,
+  Microscope,
+  Stethoscope,
+  BookOpen,
+  Users,
+  Palette,
+  Code
 } from 'lucide-react'
 
 /**
@@ -71,38 +75,38 @@ export default async function Home() {
         <div className="container px-4 md:px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
-              Everything you need to build modern web apps
+              Chăm sóc sức khỏe sinh sản toàn diện
             </h2>
             <p className="text-muted-foreground md:text-xl max-w-3xl mx-auto">
-              AbpReact provides a complete foundation for building enterprise-grade React applications 
-              with ABP Framework integration, modern tooling, and beautiful UI components.
+              Tri Thức Khỏe Sản cung cấp thông tin y khoa chuyên sâu về sản phụ khoa,
+              hỗ trợ sinh sản và sức khỏe phụ nữ từ đội ngũ chuyên gia hàng đầu.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card className="border-0 shadow-lg">
               <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Layers className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/20 rounded-lg flex items-center justify-center mb-4">
+                  <Heart className="w-6 h-6 text-pink-600" />
                 </div>
-                <CardTitle>UI Components</CardTitle>
+                <CardTitle>Sức khỏe buồng trứng</CardTitle>
                 <CardDescription>
-                  Comprehensive set of reusable components built with shadcn/ui
+                  Thông tin chuyên sâu về bệnh lý buồng trứng và phương pháp điều trị
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Buttons, forms, and navigation
+                    Suy buồng trứng sớm
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Data tables and charts
+                    Hội chứng buồng trứng đa nang
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Modals and overlays
+                    U nang buồng trứng
                   </li>
                 </ul>
               </CardContent>
@@ -110,27 +114,27 @@ export default async function Home() {
 
             <Card className="border-0 shadow-lg">
               <CardHeader>
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Palette className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mb-4">
+                  <Baby className="w-6 h-6 text-blue-600" />
                 </div>
-                <CardTitle>Visual Builder</CardTitle>
+                <CardTitle>Hỗ trợ sinh sản</CardTitle>
                 <CardDescription>
-                  Puck CMS integration for visual content editing
+                  Các kỹ thuật hỗ trợ sinh sản hiện đại và hiệu quả
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Drag-and-drop interface
+                    Thụ tinh trong ống nghiệm (IVF)
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Content blocks and layouts
+                    Kích thích buồng trứng
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Real-time preview
+                    Bảo tồn khả năng sinh sản
                   </li>
                 </ul>
               </CardContent>
@@ -139,26 +143,54 @@ export default async function Home() {
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Shield className="w-6 h-6 text-purple-600" />
+                  <Microscope className="w-6 h-6 text-purple-600" />
                 </div>
-                <CardTitle>Enterprise Security</CardTitle>
+                <CardTitle>Nghiên cứu khoa học</CardTitle>
                 <CardDescription>
-                  Full ABP authentication and authorization integration
+                  Cập nhật các nghiên cứu mới nhất trong lĩnh vực sản phụ khoa
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    JWT-based authentication
+                    Công nghệ vi lưu (Microfluid)
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Role-based access control
+                    Ứng dụng trí tuệ nhân tạo
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Multi-tenant support
+                    Phân tích dữ liệu lâm sàng
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mb-4">
+                  <Stethoscope className="w-6 h-6 text-green-600" />
+                </div>
+                <CardTitle>Điều trị bệnh phụ khoa</CardTitle>
+                <CardDescription>
+                  Phác đồ điều trị chuẩn cho các bệnh lý phụ khoa thường gặp
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                    Polyp và viêm lộ tuyến cổ tử cung
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                    U xơ tử cung
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                    Lạc nội mạc tử cung
                   </li>
                 </ul>
               </CardContent>
@@ -167,54 +199,26 @@ export default async function Home() {
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Cpu className="w-6 h-6 text-orange-600" />
+                  <BookOpen className="w-6 h-6 text-orange-600" />
                 </div>
-                <CardTitle>Modern Stack</CardTitle>
+                <CardTitle>Kiến thức sức khỏe</CardTitle>
                 <CardDescription>
-                  Built with the latest technologies for optimal performance
+                  Thư viện kiến thức y khoa dành cho phụ nữ ở mọi lứa tuổi
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Next.js 14+ with App Router
+                    Dinh dưỡng và lối sống lành mạnh
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    TypeScript for type safety
+                    Sức khỏe tâm lý và giấc ngủ
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Tailwind CSS for styling
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Database className="w-6 h-6 text-red-600" />
-                </div>
-                <CardTitle>ABP Integration</CardTitle>
-                <CardDescription>
-                  Seamless integration with ABP Framework backend
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Auto-generated API client
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Permission management
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Multi-tenancy support
+                    Chăm sóc sức khỏe tiền mãn kinh
                   </li>
                 </ul>
               </CardContent>
@@ -223,26 +227,26 @@ export default async function Home() {
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Globe className="w-6 h-6 text-indigo-600" />
+                  <Users className="w-6 h-6 text-indigo-600" />
                 </div>
-                <CardTitle>Ready to Deploy</CardTitle>
+                <CardTitle>Đội ngũ chuyên gia</CardTitle>
                 <CardDescription>
-                  Production-ready with optimized build and deployment
+                  Kết nối với các bác sĩ chuyên khoa sản phụ khoa giàu kinh nghiệm
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Optimized bundle size
+                    Bác sĩ chuyên khoa sản phụ khoa
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    SEO optimized
+                    Chuyên gia hỗ trợ sinh sản
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                    Docker support
+                    Tư vấn trực tuyến 24/7
                   </li>
                 </ul>
               </CardContent>
@@ -251,66 +255,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Getting Started Section */}
-      <section id="getting-started" className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
-              Get Started in Minutes
-            </h2>
-            <p className="text-muted-foreground md:text-xl max-w-3xl mx-auto">
-              Follow these simple steps to create your first AbpReact application
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">1</span>
-              </div>
-              <h3 className="font-semibold mb-2">Install Template</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Install the ABP React template using dotnet CLI
-              </p>
-              <div className="bg-muted p-3 rounded-lg text-left">
-                <code className="text-xs">
-                  dotnet new install Anto.Abp.React.Template
-                </code>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-green-600">2</span>
-              </div>
-              <h3 className="font-semibold mb-2">Create Project</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Generate a new project with your API configuration
-              </p>
-              <div className="bg-muted p-3 rounded-lg text-left">
-                <code className="text-xs">
-                  dotnet new abp-react -o my-app --apiUrl https://your-api-url.com
-                </code>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-purple-600">3</span>
-              </div>
-              <h3 className="font-semibold mb-2">Start Development</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Run the development server and start building
-              </p>
-              <div className="bg-muted p-3 rounded-lg text-left">
-                <code className="text-xs">
-                  cd my-app && pnpm dev
-                </code>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* News Tabs Section */}
+      <NewsTabs />
 
       {/* CTA Section */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">

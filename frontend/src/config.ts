@@ -1,5 +1,5 @@
 // Import các icon từ thư viện lucide-react để dùng trong menu
-import { BookOpenCheck, Cog, Database, FileText, Home, House, Layers3, LibraryBig, Menu, MessageSquare, Microscope, Search, Sparkles, UserRound, Users } from 'lucide-react'
+import { BookOpenCheck, Cog, Database, FileText, Home, House, ImageIcon, Layers3, LibraryBig, Menu, MessageSquare, Microscope, Search, Sparkles, UserRound, Users } from 'lucide-react'
 import React from 'react'
 
 /**
@@ -154,6 +154,11 @@ export const AdminMenus: Array<{
         name: 'Comments',     // Quản lý bình luận
         link: '/admin/cms/comments',
         icon: MessageSquare,
+      },
+      {
+        name: 'Media',        // Quản lý ảnh/media
+        link: '/admin/cms/media',
+        icon: ImageIcon,
       },
     ],
   },

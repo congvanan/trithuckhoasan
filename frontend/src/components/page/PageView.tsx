@@ -9,6 +9,7 @@
 
 import { VoloCmsKitContentsPageDto } from '@/client'
 import { PageComments } from '@/components/comment/PageComments'
+import { DoctorSidebar } from '@/components/page/DoctorSidebar'
 import { ensureValidPuckData, htmlToPuckData, isPuckData } from '@/components/puck'
 import { config } from '@/components/puck/config'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -211,49 +212,52 @@ export const PageView = ({ page }: PageViewProps) => {
         </div>
       )}
 
-      {/* Main Content - Full Page */}
-      <div className="w-full">
-        {/* Render Puck Content */}
-        {puckData ? (
-          <div>
-            {/* Try to render with Puck */}
-            <ErrorBoundary onError={handleRenderError}>
-              <Render config={config} data={ensureValidPuckData(puckData) as any} />
-            </ErrorBoundary>
-          </div>
-        ) : (
-          // Fallback for empty content or rendering errors
-          <div className="flex items-center justify-center min-h-screen">
-            <Card className="w-full max-w-md">
-              <CardHeader className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                  <FileText className="h-6 w-6 text-gray-600" />
-                </div>
-                <CardTitle>{page.title}</CardTitle>
-                <CardDescription>
-                  {contentError || renderError || "This page doesn&apos;t have any content yet."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-center">
-                <Button
-                  variant="outline"
-                  onClick={() => window.location.reload()}
-                  className="mx-auto"
-                >
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Reload Page
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+      {/* Main layout: content + sidebar */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex gap-8 items-start">
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            {puckData ? (
+              <ErrorBoundary onError={handleRenderError}>
+                <Render config={config} data={ensureValidPuckData(puckData) as any} />
+              </ErrorBoundary>
+            ) : (
+              <div className="flex items-center justify-center min-h-[400px]">
+                <Card className="w-full max-w-md">
+                  <CardHeader className="text-center">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                      <FileText className="h-6 w-6 text-gray-600" />
+                    </div>
+                    <CardTitle>{page.title}</CardTitle>
+                    <CardDescription>
+                      {contentError || renderError || "This page doesn't have any content yet."}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <Button
+                      variant="outline"
+                      onClick={() => window.location.reload()}
+                      className="mx-auto"
+                    >
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Reload Page
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
-        {/* Comments Section - Full Width */}
-        <div className="w-full bg-background">
-          <div className="container mx-auto px-4 py-8">
-            <ErrorBoundary onError={(error) => console.error('Comments error:', error)}>
-              <PageComments pageId={page.id!} pageTitle={page.title!} />
-            </ErrorBoundary>
+            {/* Comments Section */}
+            <div className="mt-8">
+              <ErrorBoundary onError={(error) => console.error('Comments error:', error)}>
+                <PageComments pageId={page.id!} pageTitle={page.title!} />
+              </ErrorBoundary>
+            </div>
+          </div>
+
+          {/* Right Sidebar - Doctor Info */}
+          <div className="w-64 shrink-0 hidden lg:block">
+            <DoctorSidebar />
           </div>
         </div>
       </div>
