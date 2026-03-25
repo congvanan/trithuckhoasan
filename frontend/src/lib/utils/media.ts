@@ -8,7 +8,7 @@
  */
 export function getMediaUrl(mediaId: string | null | undefined): string | null {
   if (!mediaId) return null
-  return `/api/cms-kit-public/media/${mediaId}`
+  return `/api/cms-kit/media/${mediaId}`
 }
 
 /**

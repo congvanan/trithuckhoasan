@@ -1,17 +1,12 @@
+import React from 'react'
+import { RichTextField } from '../../fields/RichTextField'
+
 export const TextBlockFields = {
   text: {
-    type: 'textarea' as const,
-    label: 'Text Content',
-  },
-  type: {
-    type: 'select' as const,
-    label: 'Text Type',
-    options: [
-      { label: 'Paragraph', value: 'paragraph' },
-      { label: 'Heading', value: 'heading' },
-      { label: 'Subheading', value: 'subheading' },
-      { label: 'Quote', value: 'quote' },
-    ],
+    type: 'custom' as const,
+    label: 'Nội dung',
+    render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) =>
+      React.createElement(RichTextField, { value, onChange }),
   },
   alignment: {
     type: 'select' as const,
@@ -34,20 +29,6 @@ export const TextBlockFields = {
       { label: '2XL', value: '2xl' },
       { label: '3XL', value: '3xl' },
     ],
-  },
-  fontWeight: {
-    type: 'select' as const,
-    label: 'Font Weight',
-    options: [
-      { label: 'Normal', value: 'normal' },
-      { label: 'Medium', value: 'medium' },
-      { label: 'Semibold', value: 'semibold' },
-      { label: 'Bold', value: 'bold' },
-    ],
-  },
-  color: {
-    type: 'text' as const,
-    label: 'Text Color (hex or CSS color)',
   },
   maxWidth: {
     type: 'select' as const,

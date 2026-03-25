@@ -195,6 +195,16 @@
   @apply bg-muted font-semibold;
 }
 
+/* Cho phép inline color từ Tiptap */
+.prose [style*="color"] { color: inherit; }
+.prose span[style] { color: revert; }
+
+/* Tiptap editor trong Puck panel */
+.tiptap { outline: none; }
+.tiptap p { margin: 0 0 0.5em; }
+.tiptap ul { list-style: disc; padding-left: 1.5em; margin: 0.5em 0; }
+.tiptap ol { list-style: decimal; padding-left: 1.5em; margin: 0.5em 0; }
+
 /* Puck Editor Custom Styles */
 .puck-editor {
   @apply bg-background text-foreground h-full;

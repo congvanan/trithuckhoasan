@@ -25,4 +25,6 @@ export interface HeroProps {
   animation?: 'none' | 'fade-in' | 'slide-up' | 'slide-down'
   borderRadius?: string
   shadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  titleFormat?: string
+  subtitleFormat?: string
 }

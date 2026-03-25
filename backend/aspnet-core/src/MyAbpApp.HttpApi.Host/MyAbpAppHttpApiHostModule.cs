@@ -28,6 +28,9 @@ using Volo.Abp.Modularity;
 using Volo.Abp.Security.Claims;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.UI.Navigation.Urls;
+using Microsoft.AspNetCore.Hosting;
+using Volo.Abp.BlobStoring;
+using Volo.Abp.BlobStoring.FileSystem;
 using Volo.Abp.VirtualFileSystem;
 
 namespace MyAbpApp;
@@ -41,7 +44,8 @@ namespace MyAbpApp;
     typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule),
     typeof(AbpAccountWebOpenIddictModule),
     typeof(AbpAspNetCoreSerilogModule),
-    typeof(AbpSwashbuckleModule)
+    typeof(AbpSwashbuckleModule),
+    typeof(AbpBlobStoringFileSystemModule)
 )]
 public class MyAbpAppHttpApiHostModule : AbpModule
 {
@@ -67,6 +71,7 @@ public class MyAbpAppHttpApiHostModule : AbpModule
         ConfigureBundles();
         ConfigureUrls(configuration);
         ConfigureConventionalControllers();
+        ConfigureBlobStoring(hostingEnvironment);
         ConfigureVirtualFileSystem(context);
         ConfigureCors(context, configuration);
         ConfigureSwaggerServices(context, configuration);
@@ -104,6 +109,20 @@ public class MyAbpAppHttpApiHostModule : AbpModule
 
             options.Applications["Angular"].RootUrl = configuration["App:ClientUrl"];
             options.Applications["Angular"].Urls[AccountUrlNames.PasswordReset] = "account/reset-password";
+        });
+    }
+
+    private void ConfigureBlobStoring(IWebHostEnvironment hostingEnvironment)
+    {
+        Configure<AbpBlobStoringOptions>(options =>
+        {
+            options.Containers.ConfigureDefault(container =>
+            {
+                container.UseFileSystem(fileSystem =>
+                {
+                    fileSystem.BasePath = Path.Combine(hostingEnvironment.ContentRootPath, "wwwroot", "media");
+                });
+            });
         });
     }
 

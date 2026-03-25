@@ -23,7 +23,7 @@ export const DOCTORS: Doctor[] = [
     title: 'BSCKI',
     specialty: 'Khoa Sản - Phụ khoa',
     hospital: 'Bệnh viện Đa khoa Hồng Ngọc - Yên Ninh',
-    mediaId: undefined, // TODO: upload ảnh lên Admin → CMS → Media, paste mediaId vào đây
+    mediaId: 'e1fcfee7-467d-8f5b-f997-3a201d05d2e7', // TODO: upload ảnh lên Admin → CMS → Media, paste mediaId vào đây
     currentPosition: 'Phó Trưởng khoa - Cơ sở Yên Ninh',
     education: ['Tốt nghiệp ĐH Y Hà Nội', 'Bác sĩ Chuyên khoa I'],
     degrees: ['Bác sĩ Chuyên khoa I'],

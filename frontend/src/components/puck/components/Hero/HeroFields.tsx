@@ -1,3 +1,7 @@
+import React from 'react'
+import { ColorPickerField } from '../../fields/ColorPickerField'
+import { TextFormatField } from '../../fields/TextFormatField'
+
 export const HeroFields = {
   preset: {
     type: 'select' as const,
@@ -20,20 +24,38 @@ export const HeroFields = {
     label: 'Subtitle',
   },
   backgroundColor: {
-    type: 'text' as const,
-    label: 'Background Color (hex or CSS color)',
+    type: 'custom' as const,
+    label: 'Background Color',
+    render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) =>
+      React.createElement(ColorPickerField, { value, onChange }),
   },
   backgroundImage: {
     type: 'text' as const,
     label: 'Background Image URL',
   },
   backgroundOverlay: {
-    type: 'text' as const,
-    label: 'Background Overlay (rgba or hex)',
+    type: 'custom' as const,
+    label: 'Background Overlay',
+    render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) =>
+      React.createElement(ColorPickerField, { value, onChange }),
   },
   textColor: {
-    type: 'text' as const,
-    label: 'Text Color (hex or CSS color)',
+    type: 'custom' as const,
+    label: 'Text Color',
+    render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) =>
+      React.createElement(ColorPickerField, { value, onChange }),
+  },
+  titleFormat: {
+    type: 'custom' as const,
+    label: 'Định dạng tiêu đề (B / I / U)',
+    render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) =>
+      React.createElement(TextFormatField, { value, onChange }),
+  },
+  subtitleFormat: {
+    type: 'custom' as const,
+    label: 'Định dạng phụ đề (B / I / U)',
+    render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) =>
+      React.createElement(TextFormatField, { value, onChange }),
   },
   showButton: {
     type: 'select' as const,

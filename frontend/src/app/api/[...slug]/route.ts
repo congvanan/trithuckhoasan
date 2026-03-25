@@ -22,7 +22,6 @@ const isValidTenantId = (id: string | undefined | null): boolean => {
 
 const getHeaders = async (path: string): Promise<HeadersInit> => {
   const headers = new Headers()
-  headers.set('Content-Type', 'application/json')
 
   if (isPublicEndpoint(path)) {
     try {
@@ -75,6 +74,14 @@ const makeApiRequest = async (
     const url = `${EXTERNAL_API_URL}${path}${request.nextUrl.search}`
 
     const headers = await getHeaders(path)
+
+    // Forward Content-Type từ request gốc (quan trọng cho multipart/form-data upload file)
+    const contentType = request.headers.get('Content-Type')
+    if (contentType) {
+      headers.set('Content-Type', contentType)
+    } else if (includeBody) {
+      headers.set('Content-Type', 'application/json')
+    }
 
     const options: RequestInit = {
       method,
@@ -150,10 +157,22 @@ const makeApiRequest = async (
       })
     }
 
-    // Forward the response with original headers for other status codes
+    const responseContentType = response.headers.get('Content-Type') ?? ''
+
+    // Forward binary responses (ảnh, file) — đọc ArrayBuffer để tránh lỗi stream
+    if (!responseContentType.includes('application/json') && !responseContentType.includes('text/')) {
+      const buffer = await response.arrayBuffer()
+      return new NextResponse(buffer, {
+        status: response.status,
+        headers: {
+          'Content-Type': responseContentType || 'application/octet-stream',
+          'Cache-Control': 'public, max-age=86400',
+        },
+      })
+    }
+
     const responseHeaders = new Headers(response.headers)
     const data = await response.json().catch(() => null)
-
     return NextResponse.json(data, {
       status: response.status,
       headers: responseHeaders,

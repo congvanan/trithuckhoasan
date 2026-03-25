@@ -5,6 +5,7 @@ import PublicLayout from '@/layout/public-layout'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { NewsTabs } from '@/components/sections/NewsTabs'
+import { fetchBlogPosts } from '@/lib/server/fetchBlogPosts'
 import {
   Rocket,
   Shield,
@@ -29,9 +30,11 @@ import {
  * @returns {React.ReactElement} The rendered JSX element.
  */
 export default async function Home() {
-  // Bỏ comment dòng dưới để redirect homepage sang trang CMS có slug "home"
-  // Tạo trang CMS với slug "home" trong Admin → CMS → Pages trước
-  // redirect('/pages/home')
+  const [chuyenNganhPosts, quocTePosts] = await Promise.all([
+    fetchBlogPosts('tin-chuyen-nghanh', 4),
+    fetchBlogPosts('tin-quoc-te', 4),
+  ])
+
   return (
     <PublicLayout>
       {/* Hero Section */}
@@ -256,7 +259,7 @@ export default async function Home() {
       </section>
 
       {/* News Tabs Section */}
-      <NewsTabs />
+      <NewsTabs chuyenNganhPosts={chuyenNganhPosts} quocTePosts={quocTePosts} />
 
       {/* CTA Section */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">

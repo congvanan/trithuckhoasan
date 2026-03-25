@@ -25,4 +25,6 @@ export const HeroDefaults = {
   animation: 'fade-in' as const,
   borderRadius: '0px',
   shadow: 'xl' as const,
+  titleFormat: '',
+  subtitleFormat: '',
 }

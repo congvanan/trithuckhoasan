@@ -1,5 +1,5 @@
 'use client'
-import { MenuItemDto } from '@/client'
+import { menuItemAdminUpdate, MenuItemDto } from '@/client'
 import Error from '@/components/ui/Error'
 import Loader from '@/components/ui/Loader'
 import { Search } from '@/components/ui/Search'
@@ -39,6 +39,33 @@ export const MenuList = () => {
     })
   }
 
+  const handleToggleActive = async (menuItem: MenuItemDto) => {
+    try {
+      await menuItemAdminUpdate({
+        path: { id: menuItem.id! },
+        body: {
+          displayName: menuItem.displayName!,
+          url: menuItem.url,
+          icon: menuItem.icon,
+          isActive: !menuItem.isActive,
+          target: menuItem.target,
+          elementId: menuItem.elementId,
+          cssClass: menuItem.cssClass,
+          pageId: menuItem.pageId,
+          requiredPermissionName: menuItem.requiredPermissionName,
+          concurrencyStamp: menuItem.concurrencyStamp,
+        },
+      })
+      queryClient.invalidateQueries({ queryKey: [QueryNames.GetMenuItems] })
+      toast({
+        title: !menuItem.isActive ? 'Đã bật' : 'Đã tắt',
+        description: `"${menuItem.displayName}" ${!menuItem.isActive ? 'active' : 'inactive'}`,
+      })
+    } catch {
+      toast({ title: 'Lỗi', description: 'Không thể cập nhật trạng thái', variant: 'destructive' })
+    }
+  }
+
   if (isLoading) return <Loader />
   if (isError) return <Error />
 
@@ -57,7 +84,7 @@ export const MenuList = () => {
       <Search onUpdate={setSearchStr} value={searchStr} />
 
       <div className="border rounded-lg p-4">
-        <MenuTree items={data?.items || []} onEdit={handleEdit} onDelete={handleDelete} />
+        <MenuTree items={data?.items || []} onEdit={handleEdit} onDelete={handleDelete} onToggleActive={handleToggleActive} />
       </div>
     </div>
   )

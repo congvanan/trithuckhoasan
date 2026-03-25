@@ -1,7 +1,12 @@
+import React from 'react'
+import { ImageUploadField } from '../../fields/ImageUploadField'
+
 export const ImageBlockFields = {
   src: {
-    type: 'text' as const,
-    label: 'Image URL',
+    type: 'custom' as const,
+    label: 'Ảnh',
+    render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) =>
+      React.createElement(ImageUploadField, { value, onChange }),
   },
   alt: {
     type: 'text' as const,

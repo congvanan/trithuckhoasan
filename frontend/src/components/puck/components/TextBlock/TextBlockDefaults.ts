@@ -3,7 +3,7 @@ export const TextBlockDefaults = {
   type: 'paragraph' as const,
   alignment: 'left' as const,
   fontSize: 'base' as const,
-  fontWeight: 'normal' as const,
+  textFormat: '',
   color: '#374151',
   maxWidth: 'full' as const,
   lineHeight: 'normal' as const,

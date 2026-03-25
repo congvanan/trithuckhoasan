@@ -2,6 +2,7 @@
 import { MenuItemDto } from '@/client'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import { useGrantedPolicies } from '@/lib/hooks/useGrantedPolicies'
 import { Permissions } from '@/lib/utils'
 import { ChevronDown, ChevronRight, FileText, Folder } from 'lucide-react'
@@ -15,6 +16,7 @@ interface MenuTreeProps {
   items: MenuItemDto[]
   onEdit?: (item: MenuItemDto) => void
   onDelete?: (item: MenuItemDto) => void
+  onToggleActive?: (item: MenuItemDto) => void
 }
 
 interface TreeNodeProps {
@@ -22,13 +24,22 @@ interface TreeNodeProps {
   level: number
   onEdit?: (item: MenuItemDto) => void
   onDelete?: (item: MenuItemDto) => void
+  onToggleActive?: (item: MenuItemDto) => void
 }
 
-const TreeNode = ({ item, level, onEdit, onDelete }: TreeNodeProps) => {
+const TreeNode = ({ item, level, onEdit, onDelete, onToggleActive }: TreeNodeProps) => {
   const { can } = useGrantedPolicies()
   const children = item.children || []
   const [isExpanded, setIsExpanded] = useState(level === 0)
+  const [toggling, setToggling] = useState(false)
   const hasChildren = children.length > 0
+
+  const handleToggle = async () => {
+    if (!onToggleActive || toggling) return
+    setToggling(true)
+    await onToggleActive(item)
+    setToggling(false)
+  }
 
   return (
     <div className="w-full">
@@ -71,11 +82,6 @@ const TreeNode = ({ item, level, onEdit, onDelete }: TreeNodeProps) => {
                 {item.url}
               </Badge>
             )}
-            {!item.isActive && (
-              <Badge variant="secondary" className="text-xs">
-                Inactive
-              </Badge>
-            )}
             {item.order !== undefined && (
               <Badge variant="outline" className="text-xs">
                 Order: {item.order}
@@ -84,7 +90,22 @@ const TreeNode = ({ item, level, onEdit, onDelete }: TreeNodeProps) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* Active toggle column */}
+          {can(Permissions.CMSKIT_MENUS_UPDATE) && (
+            <div className="flex items-center gap-1.5">
+              <Switch
+                checked={item.isActive ?? true}
+                onCheckedChange={handleToggle}
+                disabled={toggling}
+                className="data-[state=checked]:bg-green-500"
+              />
+              <span className={`text-xs w-14 ${item.isActive ? 'text-green-600 font-medium' : 'text-gray-400'}`}>
+                {item.isActive ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+          )}
+
           {onEdit && can(Permissions.CMSKIT_MENUS_UPDATE) && (
             <Button variant="ghost" size="sm" onClick={() => onEdit(item)} className="h-8 w-8 p-0">
               <FileText className="h-4 w-4" />
@@ -112,6 +133,7 @@ const TreeNode = ({ item, level, onEdit, onDelete }: TreeNodeProps) => {
               level={level + 1}
               onEdit={onEdit}
               onDelete={onDelete}
+              onToggleActive={onToggleActive}
             />
           ))}
         </div>
@@ -120,7 +142,7 @@ const TreeNode = ({ item, level, onEdit, onDelete }: TreeNodeProps) => {
   )
 }
 
-export const MenuTree = ({ items, onEdit, onDelete }: MenuTreeProps) => {
+export const MenuTree = ({ items, onEdit, onDelete, onToggleActive }: MenuTreeProps) => {
   // Build tree structure
   const buildTree = (menuItems: MenuItemDto[]): TreeMenuItem[] => {
     const itemMap = new Map<string, TreeMenuItem>()
@@ -159,7 +181,7 @@ export const MenuTree = ({ items, onEdit, onDelete }: MenuTreeProps) => {
   return (
     <div className="space-y-1">
       {treeItems.map((item) => (
-        <TreeNode key={item.id} item={item} level={0} onEdit={onEdit} onDelete={onDelete} />
+        <TreeNode key={item.id} item={item} level={0} onEdit={onEdit} onDelete={onDelete} onToggleActive={onToggleActive} />
       ))}
     </div>
   )

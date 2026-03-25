@@ -10,10 +10,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { DivLogo } from '@/components/div-logo'
-import { PublicMenus } from '@/config'
 import useSession from '@/useSession'
 import {
-  ArrowRight,
   CircleUser,
   Menu,
   ChevronDown,
@@ -21,14 +19,74 @@ import {
   Settings,
   LogOut,
   User,
-  Zap
+  Zap,
+  Link2,
+  Home,
+  Info,
+  BookOpen,
+  Microscope,
+  MessageCircle,
+  BriefcaseMedical,
+  Phone,
+  Users,
+  Stethoscope,
+  Baby,
+  Search,
+  type LucideIcon,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import type { MenuItemDto } from '@/client/types.gen'
 
-export default function TopNavBar() {
+const ICON_MAP: Record<string, LucideIcon> = {
+  home: Home,
+  info: Info,
+  'book-open': BookOpen,
+  book: BookOpen,
+  microscope: Microscope,
+  research: Microscope,
+  'message-circle': MessageCircle,
+  chat: MessageCircle,
+  'briefcase-medical': BriefcaseMedical,
+  service: BriefcaseMedical,
+  phone: Phone,
+  contact: Phone,
+  users: Users,
+  user: User,
+  stethoscope: Stethoscope,
+  baby: Baby,
+}
+
+function getIcon(iconName: string | null | undefined): LucideIcon {
+  if (!iconName) return Link2
+  return ICON_MAP[iconName.toLowerCase().trim()] ?? Link2
+}
+
+interface MenuNode {
+  item: MenuItemDto
+  children: MenuNode[]
+}
+
+function buildMenuTree(items: MenuItemDto[]): MenuNode[] {
+  const active = items.filter((i) => i.isActive !== false)
+  const sorted = [...active].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+  const roots = sorted.filter((i) => !i.parentId)
+  return roots.map((root) => ({
+    item: root,
+    children: sorted
+      .filter((i) => i.parentId === root.id)
+      .map((child) => ({ item: child, children: [] })),
+  }))
+}
+
+interface TopNavBarProps {
+  initialMenuItems?: MenuItemDto[]
+}
+
+export default function TopNavBar({ initialMenuItems = [] }: TopNavBarProps) {
   const sessionData = useSession()
   const [isScrolled, setIsScrolled] = useState(false)
+  const [menuTree] = useState<MenuNode[]>(() => buildMenuTree(initialMenuItems))
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10)
@@ -38,13 +96,13 @@ export default function TopNavBar() {
 
   return (
     <header className={`sticky inset-x-0 top-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm' 
+      isScrolled
+        ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm'
         : 'bg-background border-b'
     }`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo and Brand */}
+          {/* Logo */}
           <div className="flex items-center gap-2">
             <Link href="/">
               <DivLogo />
@@ -53,34 +111,38 @@ export default function TopNavBar() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
-            {PublicMenus.map((menu, index) =>
-              menu.submenus ? (
-                <DropdownMenu key={index}>
+            {menuTree.map((node) => {
+              const Icon = getIcon(node.item.icon)
+              return node.children.length > 0 ? (
+                <DropdownMenu key={node.item.id}>
                   <DropdownMenuTrigger asChild>
                     <button className="group flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent outline-none">
-                      <menu.Icon className="h-4 w-4" />
-                      {menu.Name}
+                      <Icon className="h-4 w-4" />
+                      {node.item.displayName}
                       <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-48">
-                    {menu.submenus.map((sub, si) => (
-                      <DropdownMenuItem key={si} asChild>
-                        <Link href={sub.Link} className="cursor-pointer">{sub.Name}</Link>
+                    {node.children.map((child) => (
+                      <DropdownMenuItem key={child.item.id} asChild>
+                        <Link href={child.item.url ?? '#'} className="cursor-pointer">
+                          {child.item.displayName}
+                        </Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
                 <Link
-                  key={index}
-                  href={menu.Link}
+                  key={node.item.id}
+                  href={node.item.url ?? '#'}
                   className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent"
                 >
-                  <menu.Icon className="h-4 w-4" />
-                  {menu.Name}
+                  <Icon className="h-4 w-4" />
+                  {node.item.displayName}
                 </Link>
               )
+            }
             )}
           </nav>
 
@@ -94,30 +156,27 @@ export default function TopNavBar() {
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col h-full">
-                {/* Mobile Logo */}
                 <div className="flex items-center gap-2 mb-6">
                   <DivLogo />
                 </div>
-                
-                {/* Mobile Navigation */}
                 <nav className="flex-1 space-y-1 overflow-y-auto">
-                  {PublicMenus.map((menu, index) => (
-                    <div key={index}>
+                  {menuTree.map((node) => (
+                    <div key={node.item.id}>
                       <Link
-                        href={menu.Link}
+                        href={node.item.url ?? '#'}
                         className="flex items-center justify-between px-3 py-2 text-sm font-medium text-foreground hover:bg-accent rounded-md"
                       >
-                        {menu.Name}
+                        {node.item.displayName}
                       </Link>
-                      {menu.submenus && (
+                      {node.children.length > 0 && (
                         <div className="ml-4 border-l pl-3 space-y-1">
-                          {menu.submenus.map((sub, si) => (
+                          {node.children.map((child) => (
                             <Link
-                              key={si}
-                              href={sub.Link}
+                              key={child.item.id}
+                              href={child.item.url ?? '#'}
                               className="flex items-center px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
                             >
-                              {sub.Name}
+                              {child.item.displayName}
                             </Link>
                           ))}
                         </div>
@@ -125,8 +184,6 @@ export default function TopNavBar() {
                     </div>
                   ))}
                 </nav>
-                
-                {/* Mobile User Actions */}
                 <div className="border-t pt-4">
                   {sessionData.data?.isLoggedIn ? (
                     <div className="space-y-2">
@@ -161,6 +218,9 @@ export default function TopNavBar() {
 
           {/* Desktop User Actions */}
           <div className="flex items-center gap-2">
+            <Link href="/timkiem" className="flex items-center gap-1.5 px-2 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors" title="Tìm kiếm">
+              <Search className="h-4 w-4" />
+            </Link>
             {sessionData.data?.isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -170,14 +230,14 @@ export default function TopNavBar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
-                                     <div className="flex items-center justify-start gap-2 p-2">
-                     <div className="flex flex-col space-y-1 leading-none">
-                       <p className="font-medium">{sessionData.data.userInfo?.name || 'User'}</p>
-                       <p className="w-[200px] truncate text-sm text-muted-foreground">
-                         {sessionData.data.userInfo?.email || 'No email available'}
-                       </p>
-                     </div>
-                   </div>
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium">{sessionData.data.userInfo?.name || 'User'}</p>
+                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                        {sessionData.data.userInfo?.email || 'No email available'}
+                      </p>
+                    </div>
+                  </div>
                   <DropdownMenuSeparator />
                   <Link href="/admin" className="cursor-pointer">
                     <DropdownMenuItem className="flex items-center gap-2">

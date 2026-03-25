@@ -2,6 +2,7 @@
 
 import { HeroProps } from './HeroProps'
 import { cn } from '@/lib/utils'
+import { parseTextFormat } from '../../fields/TextFormatField'
 
 // Preset configurations
 const presets = {
@@ -100,6 +101,8 @@ export const Hero = ({
   animation = 'fade-in',
   borderRadius = '0px',
   shadow,
+  titleFormat,
+  subtitleFormat,
 }: HeroProps) => {
   // Apply preset configuration
   const presetConfig = presets[preset]
@@ -252,12 +255,12 @@ export const Hero = ({
       
       {/* Content */}
       <div className={contentClasses}>
-        <h1 className={titleClasses}>
+        <h1 className={titleClasses} style={parseTextFormat(titleFormat)}>
           {safeTitle}
         </h1>
-        
+
         {safeSubtitle && (
-          <p className={subtitleClasses}>
+          <p className={subtitleClasses} style={parseTextFormat(subtitleFormat)}>
             {safeSubtitle}
           </p>
         )}
