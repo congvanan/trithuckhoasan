@@ -49,14 +49,14 @@ export async function GET() {
   // Kiến thức
   const kt = await create({ displayName: 'Kiến thức', url: '#', order: 3, isActive: true, icon: 'book-open' })
   results.push('✅ Kiến thức')
-  await create({ displayName: 'Sản khoa', url: '/kien-thuc/san-khoa', parentId: kt.id, order: 1, isActive: true, icon: 'baby' })
-  await create({ displayName: 'Phụ khoa', url: '/kien-thuc/phu-khoa', parentId: kt.id, order: 2, isActive: true, icon: 'stethoscope' })
-  await create({ displayName: 'Sơ sinh', url: '/kien-thuc/so-sinh', parentId: kt.id, order: 3, isActive: true, icon: 'baby' })
+  await create({ displayName: 'Sản khoa', url: '/blog/san-khoa', parentId: kt.id, order: 1, isActive: true, icon: 'baby' })
+  await create({ displayName: 'Phụ khoa', url: '/blog/phu-khoa', parentId: kt.id, order: 2, isActive: true, icon: 'stethoscope' })
+  await create({ displayName: 'Sơ sinh', url: '/blog/so-sinh', parentId: kt.id, order: 3, isActive: true, icon: 'baby' })
 
   // Nghiên cứu
   const nc = await create({ displayName: 'Nghiên cứu', url: '#', order: 4, isActive: true, icon: 'microscope' })
   results.push('✅ Nghiên cứu')
-  await create({ displayName: 'Tin chuyên ngành', url: '/blog/tin-chuyen-nganh', parentId: nc.id, order: 1, isActive: true, icon: 'book' })
+  await create({ displayName: 'Tin chuyên ngành', url: '/blog/tin-chuyen-nghanh', parentId: nc.id, order: 1, isActive: true, icon: 'book' })
   await create({ displayName: 'Tin quốc tế', url: '/blog/tin-quoc-te', parentId: nc.id, order: 2, isActive: true, icon: 'microscope' })
 
   // Tư vấn

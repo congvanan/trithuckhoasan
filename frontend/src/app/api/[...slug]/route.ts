@@ -13,44 +13,67 @@ const isPublicEndpoint = (path: string): boolean => {
   return PUBLIC_API_PREFIXES.some((prefix) => path.startsWith(prefix))
 }
 
-// Tenant IDs that are invalid/legacy and should NOT be forwarded to ABP
 const INVALID_TENANT_IDS = new Set(['default', '', 'null', 'undefined'])
 
 const isValidTenantId = (id: string | undefined | null): boolean => {
   return !!id && !INVALID_TENANT_IDS.has(id)
 }
 
-const getHeaders = async (path: string): Promise<HeadersInit> => {
+// Cache session trong 30 giây để tránh decrypt cookie + Redis cho mỗi API call
+interface SessionCache {
+  token: string
+  tenantId?: string | null
+  expires: number
+}
+const sessionCacheMap = new Map<string, SessionCache>()
+
+const getCachedSession = async (cookieKey: string) => {
+  const now = Date.now()
+  const cached = sessionCacheMap.get(cookieKey)
+  if (cached && cached.expires > now) {
+    return { access_token: cached.token, tenantId: cached.tenantId }
+  }
+  const session = await getSession()
+  if (session.access_token) {
+    sessionCacheMap.set(cookieKey, {
+      token: session.access_token,
+      tenantId: session.tenantId,
+      expires: now + 5 * 60_000, // 5 phút
+    })
+    // Dọn cache cũ để tránh memory leak
+    if (sessionCacheMap.size > 100) {
+      for (const [k, v] of sessionCacheMap) {
+        if (v.expires < now) sessionCacheMap.delete(k)
+      }
+    }
+  }
+  return session
+}
+
+const getHeaders = async (request: NextRequest, path: string): Promise<HeadersInit> => {
   const headers = new Headers()
+  // Dùng cookie header làm key để định danh user
+  const cookieKey = request.headers.get('cookie')?.slice(0, 64) ?? 'anon'
 
   if (isPublicEndpoint(path)) {
     try {
-      const session = await getSession()
-      const tenant = session.tenantId
-      if (isValidTenantId(tenant)) {
-        headers.set('__tenant', tenant!)
+      const session = await getCachedSession(cookieKey)
+      if (isValidTenantId(session.tenantId)) {
+        headers.set('__tenant', session.tenantId!)
       }
-    } catch {
-      console.log(`[API Proxy] PUBLIC ${path} | no session`)
-    }
+    } catch { /* public endpoint — bỏ qua lỗi session */ }
     return headers
   }
 
   try {
-    const session = await getSession()
-
-    if (!session.access_token) {
-      throw new Error('No access token available in session')
-    }
-
+    const session = await getCachedSession(cookieKey)
+    if (!session.access_token) throw new Error('No access token')
     headers.set('Authorization', `Bearer ${session.access_token}`)
     if (isValidTenantId(session.tenantId)) {
       headers.set('__tenant', session.tenantId!)
     }
-
     return headers
   } catch (error) {
-    console.error('Error getting headers:', error)
     throw new Error(`Failed to get request headers: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
@@ -73,7 +96,7 @@ const makeApiRequest = async (
     const path = request.nextUrl.pathname
     const url = `${EXTERNAL_API_URL}${path}${request.nextUrl.search}`
 
-    const headers = await getHeaders(path)
+    const headers = await getHeaders(request, path)
 
     // Forward Content-Type từ request gốc (quan trọng cho multipart/form-data upload file)
     const contentType = request.headers.get('Content-Type')
@@ -82,6 +105,9 @@ const makeApiRequest = async (
     } else if (includeBody) {
       headers.set('Content-Type', 'application/json')
     }
+
+    // Thêm keep-alive để tái sử dụng kết nối TCP tới backend
+    headers.set('Connection', 'keep-alive')
 
     const options: RequestInit = {
       method,

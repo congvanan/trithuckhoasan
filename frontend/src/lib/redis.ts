@@ -8,15 +8,7 @@ export type RedisSession = {
   refresh_token: string
 }
 
-/**
- * Retrieves the Redis configuration from environment variables.
- * @returns An object containing the Redis configuration.
- */
-function getRedisConfiguration(): {
-  port: number | undefined
-  host: string | undefined
-  password: string | undefined
-} {
+function getRedisConfiguration() {
   return {
     port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : undefined,
     host: process.env.REDIS_HOST,
@@ -24,16 +16,13 @@ function getRedisConfiguration(): {
   }
 }
 
-/**
- * Creates a Redis instance with the given configuration.
- * This function initializes a Redis client using the provided configuration or defaults to environment variables.
- * It sets up various options such as lazy connection, error stack visibility, auto-pipelining, and retry strategy.
- * If the connection fails more than 3 times, it throws an error.
- * @param config - The Redis configuration.
- * @returns A Redis instance.
- * @throws Will throw an error if the Redis instance could not be created.
- */
+// Singleton Redis instance — reuse TCP connection thay vì tạo/đóng mỗi lần
+let _redisInstance: Redis | null = null
+
 export function createRedisInstance(config = getRedisConfiguration()) {
+  if (_redisInstance && _redisInstance.status !== 'end' && _redisInstance.status !== 'close') {
+    return _redisInstance
+  }
   try {
     const options: RedisOptions = {
       host: config.host,
@@ -45,27 +34,21 @@ export function createRedisInstance(config = getRedisConfiguration()) {
         if (times > 3) {
           throw new Error(`[Redis] Could not connect after ${times} attempts`)
         }
-
         return Math.min(times * 200, 1000)
       },
     }
 
-    if (config.port) {
-      options.port = config.port
-    }
-
-    if (config.password) {
-      options.password = config.password
-    }
+    if (config.port) options.port = config.port
+    if (config.password) options.password = config.password
 
     const redis = new Redis(options)
-
     redis.on('error', (error: unknown) => {
       console.warn('[Redis] Error connecting', error)
     })
 
+    _redisInstance = redis
     return redis
-  } catch (e) {
+  } catch {
     throw new Error(`[Redis] Could not create a Redis instance`)
   }
 }

@@ -8,9 +8,11 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        // With SSR, we usually want to set some default staleTime
-        // above 0 to avoid refetching immediately on the client
-        staleTime: 60 * 1000,
+        staleTime: 5 * 60 * 1000,       // Cache 5 phút — không refetch khi chuyển trang
+        gcTime: 10 * 60 * 1000,          // Giữ trong bộ nhớ 10 phút
+        refetchOnWindowFocus: false,      // Không refetch khi chuyển tab
+        refetchOnReconnect: false,        // Không refetch khi kết nối lại
+        retry: 1,                         // Thử lại 1 lần thay vì 3 lần mặc định
       },
     },
   })

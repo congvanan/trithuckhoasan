@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, PenLine, Plus, Trash2, Globe, FileText, Eye } from 'lucide-react'
+import { ArrowLeft, PenLine, Plus, Trash2, Globe, FileText, Eye, Pencil } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
@@ -122,6 +122,7 @@ function BlogPostsContent() {
       const res = await blogAdminGetAllList()
       return res.data?.items ?? []
     },
+    staleTime: 10 * 60 * 1000, // Blogs hiếm thay đổi — cache 10 phút
   })
 
   const { data, isLoading } = useQuery({
@@ -132,6 +133,7 @@ function BlogPostsContent() {
       })
       return res.data ?? { items: [], totalCount: 0 }
     },
+    placeholderData: (prev: typeof data) => prev, // Giữ data cũ khi đổi filter — không bị trống
   })
 
   const handleCreate = async () => {
@@ -302,6 +304,11 @@ function BlogPostsContent() {
                   </p>
                 </div>
                 <div className="flex items-center gap-1 ml-3 shrink-0">
+                  <Link href={`/admin/cms/blog-posts/${post.id}/edit`}>
+                    <Button variant="outline" size="sm" className="text-blue-600 border-blue-300 hover:bg-blue-50" title="Chỉnh sửa bài viết">
+                      <Pencil className="w-3 h-3 mr-1" /> Sửa
+                    </Button>
+                  </Link>
                   <label className={`cursor-pointer px-2 py-1 rounded border text-xs ${uploadingImageId === post.id ? 'opacity-50' : 'text-blue-600 border-blue-300 hover:bg-blue-50'}`} title="Upload ảnh bìa">
                     {uploadingImageId === post.id ? '⏳' : '🖼️'}
                     <input type="file" accept="image/*" className="hidden"

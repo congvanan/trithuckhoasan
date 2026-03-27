@@ -26,9 +26,9 @@ function getCoverUrl(post: BlogPostCommonDto): string {
 
 function NewsCard({ post, blogSlug, categoryLabel }: { post: BlogPostCommonDto; blogSlug: string; categoryLabel: string }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col">
+    <Link href={`/blog/${blogSlug}/${post.slug}`} className="group bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border hover:border-blue-200 cursor-pointer">
       <div className="h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
-        <img src={getCoverUrl(post)} alt={post.title ?? ''} className="w-full h-full object-cover"
+        <img src={getCoverUrl(post)} alt={post.title ?? ''} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           onError={(e) => { (e.target as HTMLImageElement).src = '/img/news-placeholder.png' }} />
       </div>
       <div className="p-4 flex flex-col flex-1">
@@ -39,12 +39,12 @@ function NewsCard({ post, blogSlug, categoryLabel }: { post: BlogPostCommonDto; 
           <FolderOpen className="w-3 h-3" />
           <span className="bg-blue-50 px-2 py-0.5 rounded">{categoryLabel}</span>
         </div>
-        <h3 className="font-bold text-gray-800 text-sm uppercase leading-tight mb-3 line-clamp-3 flex-1">{post.title}</h3>
-        <Link href={`/blog/${blogSlug}/${post.slug}`} className="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1 mt-auto">
-          + Xem chi tiết
-        </Link>
+        <h3 className="font-bold text-gray-800 dark:text-gray-100 text-sm uppercase leading-tight mb-3 line-clamp-3 flex-1 group-hover:text-blue-600 transition-colors duration-200">{post.title}</h3>
+        <span className="text-blue-600 text-sm font-medium flex items-center gap-1 mt-auto group-hover:gap-2 transition-all duration-200">
+          + Xem chi tiết <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        </span>
       </div>
-    </div>
+    </Link>
   )
 }
 

@@ -5,6 +5,7 @@ import PublicLayout from '@/layout/public-layout'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { NewsTabs } from '@/components/sections/NewsTabs'
+import { KienThucTabs } from '@/components/sections/KienThucTabs'
 import { fetchBlogPosts } from '@/lib/server/fetchBlogPosts'
 import {
   Rocket,
@@ -30,14 +31,25 @@ import {
  * @returns {React.ReactElement} The rendered JSX element.
  */
 export default async function Home() {
-  const [chuyenNganhPosts, quocTePosts] = await Promise.all([
+  const [chuyenNganhPosts, quocTePosts, sanKhoaPosts, phuKhoaPosts, soSinhPosts, featuredPosts] = await Promise.all([
     fetchBlogPosts('tin-chuyen-nghanh', 4),
     fetchBlogPosts('tin-quoc-te', 4),
+    fetchBlogPosts('san-khoa', 4),
+    fetchBlogPosts('phu-khoa', 4),
+    fetchBlogPosts('so-sinh', 4),
+    fetchBlogPosts('tin-noi-bat', 1),
   ])
+  const featured = featuredPosts[0] ?? null
+  const featuredCover = featured?.shortDescription?.startsWith('http') && featured.shortDescription.includes('|')
+    ? featured.shortDescription.split('|')[0]
+    : featured?.coverImageMediaId ? `/api/cms-kit/media/${featured.coverImageMediaId}` : '/img/hero-medical.png'
+  const featuredDesc = featured?.shortDescription?.includes('|')
+    ? featured.shortDescription.slice(featured.shortDescription.indexOf('|') + 1)
+    : featured?.shortDescription ?? ''
 
   return (
     <PublicLayout>
-      {/* Hero Section */}
+      {/* Hero Section — Bài nổi bật */}
       <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
@@ -48,27 +60,33 @@ export default async function Home() {
                   Tin tức y khoa
                 </Badge>
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl xl:text-5xl/none">
-                  Điều trị polyp và viêm lộ tuyến cổ tử cung trong một lần can thiệp
+                  {featured?.title ?? 'Chào mừng đến Tri Thức Sản Khoa'}
                 </h1>
-                <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Ra máu bất thường giữa kỳ kinh, chị N.T.P đến BVĐK Hồng Ngọc thăm khám và bất ngờ phát hiện nhiều polyp cổ tử cung.
-                </p>
+                {featuredDesc && (
+                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                    {featuredDesc}
+                  </p>
+                )}
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/pages/dieu-tri-polyp-va-viem-lo-tuyen-co-tu-cung">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    <ArrowRight className="w-4 h-4 mr-2" />
-                    Đọc bài viết
-                  </Button>
-                </Link>
-              </div>
+              {featured && (
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href={`/blog/tin-noi-bat/${featured.slug}`}>
+                    <Button size="lg" className="w-full sm:w-auto">
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                      Đọc bài viết
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/img/hero-medical.png"
-              alt="Bác sĩ thăm khám sản phụ"
-              className="rounded-xl shadow-2xl w-full h-auto object-cover"
-            />
+            <div className="relative aspect-video rounded-xl shadow-2xl overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={featuredCover}
+                alt={featured?.title ?? 'Bác sĩ thăm khám sản phụ'}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -87,10 +105,10 @@ export default async function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border hover:border-pink-200 cursor-pointer group">
               <CardHeader>
-                <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Heart className="w-6 h-6 text-pink-600" />
+                <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-pink-500 transition-colors duration-300">
+                  <Heart className="w-6 h-6 text-pink-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <CardTitle>Sức khỏe buồng trứng</CardTitle>
                 <CardDescription>
@@ -115,10 +133,10 @@ export default async function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border hover:border-blue-200 cursor-pointer group">
               <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Baby className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500 transition-colors duration-300">
+                  <Baby className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <CardTitle>Hỗ trợ sinh sản</CardTitle>
                 <CardDescription>
@@ -143,10 +161,10 @@ export default async function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border hover:border-purple-200 cursor-pointer group">
               <CardHeader>
-                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Microscope className="w-6 h-6 text-purple-600" />
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500 transition-colors duration-300">
+                  <Microscope className="w-6 h-6 text-purple-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <CardTitle>Nghiên cứu khoa học</CardTitle>
                 <CardDescription>
@@ -171,10 +189,10 @@ export default async function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border hover:border-green-200 cursor-pointer group">
               <CardHeader>
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Stethoscope className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-500 transition-colors duration-300">
+                  <Stethoscope className="w-6 h-6 text-green-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <CardTitle>Điều trị bệnh phụ khoa</CardTitle>
                 <CardDescription>
@@ -199,10 +217,10 @@ export default async function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border hover:border-orange-200 cursor-pointer group">
               <CardHeader>
-                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="w-6 h-6 text-orange-600" />
+                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-500 transition-colors duration-300">
+                  <BookOpen className="w-6 h-6 text-orange-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <CardTitle>Kiến thức sức khỏe</CardTitle>
                 <CardDescription>
@@ -227,10 +245,10 @@ export default async function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border hover:border-indigo-200 cursor-pointer group">
               <CardHeader>
-                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-indigo-600" />
+                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-500 transition-colors duration-300">
+                  <Users className="w-6 h-6 text-indigo-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <CardTitle>Đội ngũ chuyên gia</CardTitle>
                 <CardDescription>
@@ -260,6 +278,9 @@ export default async function Home() {
 
       {/* News Tabs Section */}
       <NewsTabs chuyenNganhPosts={chuyenNganhPosts} quocTePosts={quocTePosts} />
+
+      {/* Kiến thức chuyên khoa */}
+      <KienThucTabs sanKhoaPosts={sanKhoaPosts} phuKhoaPosts={phuKhoaPosts} soSinhPosts={soSinhPosts} />
 
       {/* CTA Section */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">

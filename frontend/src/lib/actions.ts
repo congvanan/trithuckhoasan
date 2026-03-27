@@ -65,7 +65,6 @@ export async function getSession(): Promise<IronSession<SessionData>> {
           refresh_token: tokenSet.refresh_token,
         } as RedisSession
         await redis.set(redisKey, JSON.stringify(newRedisSessionData))
-        await redis.quit()
         
         console.log('Token refreshed successfully')
       } catch (refreshError) {

@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/components/ui/use-toast'
 import { QueryNames } from '@/lib/hooks/QueryConstants'
 import { useGrantedPolicies } from '@/lib/hooks/useGrantedPolicies'
@@ -327,17 +326,6 @@ export default function EditMenuItem() {
               </p>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isActive"
-                checked={watch('isActive')}
-                onCheckedChange={(checked) => setValue('isActive', checked)}
-              />
-              <Label htmlFor="isActive">Active</Label>
-              <p className="text-sm text-muted-foreground ml-2">
-                Whether this menu item is visible
-              </p>
-            </div>
           </CardContent>
         </Card>
 
