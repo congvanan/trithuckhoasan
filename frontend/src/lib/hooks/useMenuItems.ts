@@ -43,6 +43,7 @@ export const useMenuItems = (
         }
       }
     },
+    staleTime: 5 * 60_000,
   })
 }
 

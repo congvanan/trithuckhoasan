@@ -32,7 +32,7 @@ async function fetchPosts(blogSlug: string, page: number, limit: number) {
     const skip = (page - 1) * limit
     const res = await fetch(
       `${baseUrl}/api/cms-kit-public/blog-posts/${blogSlug}?MaxResultCount=${limit}&SkipCount=${skip}`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 60, tags: ['blog-posts'] } }
     )
     if (!res.ok) return { items: [] as BlogPostCommonDto[], totalCount: 0 }
     return await res.json()

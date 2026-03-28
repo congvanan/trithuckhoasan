@@ -41,8 +41,13 @@ export const defaultSession: SessionData = {
  *
  * @returns {Promise<any>} The client configuration.
  */
+let _cachedClientConfig: Awaited<ReturnType<typeof client.discovery>> | null = null
+
 export async function getClientConfig() {
-  return await client.discovery(new URL(clientConfig.url!), clientConfig.client_id!)
+  if (!_cachedClientConfig) {
+    _cachedClientConfig = await client.discovery(new URL(clientConfig.url!), clientConfig.client_id!)
+  }
+  return _cachedClientConfig
 }
 
 /**

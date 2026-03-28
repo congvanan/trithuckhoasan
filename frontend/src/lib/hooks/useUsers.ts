@@ -38,5 +38,6 @@ export const useUsers = (
       })
       return response.data
     },
+    staleTime: 5 * 60_000,
   })
 }

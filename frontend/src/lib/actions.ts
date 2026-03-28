@@ -69,8 +69,15 @@ export async function getSession(): Promise<IronSession<SessionData>> {
         console.log('Token refreshed successfully')
       } catch (refreshError) {
         console.error('Error refreshing token:', refreshError)
-        // Don't throw here, just log the error and continue with the current session
-        // The user will be redirected to login if the token is invalid
+        // Refresh token is invalid/expired — clear session so middleware redirects to login
+        session.isLoggedIn = defaultSession.isLoggedIn
+        session.access_token = defaultSession.access_token
+        session.userInfo = defaultSession.userInfo
+        try {
+          await session.save()
+        } catch {
+          // Cannot save from Server Component
+        }
       }
     }
     return session

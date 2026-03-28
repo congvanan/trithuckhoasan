@@ -38,5 +38,6 @@ export const useRoles = (
       })
       return data ?? null
     },
+    staleTime: 5 * 60_000,
   })
 }
