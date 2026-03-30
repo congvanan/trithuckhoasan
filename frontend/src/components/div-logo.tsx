@@ -1,23 +1,24 @@
 // Logo đầy đủ dùng cho navbar ngang (topbar, mobile menu)
 export function DivLogo({ className = '' }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-2 ${className}`} style={{ minWidth: 0 }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/img/logo-san-khoa.png"
-        alt="Tri Thức Sản Khoa"
-        width={48}
-        height={48}
-        style={{ flexShrink: 0, objectFit: 'contain' }}
-      />
-      <div className="flex flex-col leading-tight" style={{ minWidth: 0 }}>
-        <span className="font-extrabold text-[15px] tracking-wide text-[#1e3a6e] uppercase whitespace-nowrap">
-          TRI THỨC SẢN KHOA
-        </span>
-        <span className="text-[12px] font-medium italic text-[#e85b8a] whitespace-nowrap text-center">
-          Obstetrics Knowledge Hub
-        </span>
+    <div className={`flex items-center gap-3 ${className}`} style={{ minWidth: 0 }}>
+      {/* Logo image với viền teal gradient */}
+      <div className="relative shrink-0 p-[2.5px] rounded-full"
+        style={{ background: 'linear-gradient(135deg, #0f766e, #14b8a6, #0d9488)' }}>
+        <div className="rounded-full bg-white p-[2px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/img/logo-san-khoa.png"
+            alt="Tri Thức Sản Khoa"
+            width={44}
+            height={44}
+            style={{ flexShrink: 0, objectFit: 'contain', borderRadius: '50%', display: 'block' }}
+          />
+        </div>
       </div>
+      <span className="font-extrabold text-[15px] tracking-wide text-[#1e3a6e] uppercase whitespace-nowrap">
+        TRI THỨC SẢN KHOA
+      </span>
     </div>
   )
 }
@@ -34,14 +35,9 @@ export function DivLogoCompact({ className = '' }: { className?: string }) {
         height={40}
         style={{ flexShrink: 0, objectFit: 'contain' }}
       />
-      <div className="flex flex-col leading-tight">
-        <span className="font-extrabold text-[12px] tracking-wide text-[#1e3a6e] uppercase leading-tight">
-          TRI THỨC<br />SẢN KHOA
-        </span>
-        <span className="text-[10px] font-medium text-[#e85b8a]">
-          Obstetrics Knowledge Hub
-        </span>
-      </div>
+      <span className="font-extrabold text-[12px] tracking-wide text-[#1e3a6e] uppercase leading-tight">
+        TRI THỨC<br />SẢN KHOA
+      </span>
     </div>
   )
 }

@@ -33,6 +33,10 @@ import {
   Stethoscope,
   Baby,
   Search,
+  Newspaper,
+  Brain,
+  FileText,
+  HeartPulse,
   type LucideIcon,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -154,11 +158,48 @@ const ICON_MAP: Record<string, LucideIcon> = {
   user: User,
   stethoscope: Stethoscope,
   baby: Baby,
+  newspaper: Newspaper,
+  news: Newspaper,
+  brain: Brain,
+  ai: Brain,
+  'file-text': FileText,
+  document: FileText,
+  'heart-pulse': HeartPulse,
+  health: HeartPulse,
 }
 
-function getIcon(iconName: string | null | undefined): LucideIcon {
-  if (!iconName) return Link2
-  return ICON_MAP[iconName.toLowerCase().trim()] ?? Link2
+// Fallback theo từ khóa trong tên menu tiếng Việt
+const NAME_KEYWORD_MAP: [string, LucideIcon][] = [
+  ['trang chủ', Home],
+  ['tin tức', Newspaper],
+  ['tin nổi bật', Newspaper],
+  ['kiến thức', BookOpen],
+  ['trí tuệ', Brain],
+  ['ai', Brain],
+  ['nhân tạo', Brain],
+  ['tài liệu', FileText],
+  ['liên hệ', Phone],
+  ['bác sĩ', Stethoscope],
+  ['chuyên gia', Users],
+  ['sản khoa', HeartPulse],
+  ['phụ khoa', HeartPulse],
+  ['sơ sinh', Baby],
+  ['nghiên cứu', Microscope],
+  ['dịch vụ', BriefcaseMedical],
+]
+
+function getIcon(iconName: string | null | undefined, displayName?: string | null): LucideIcon {
+  if (iconName) {
+    const mapped = ICON_MAP[iconName.toLowerCase().trim()]
+    if (mapped) return mapped
+  }
+  if (displayName) {
+    const lower = displayName.toLowerCase()
+    for (const [kw, Icon] of NAME_KEYWORD_MAP) {
+      if (lower.includes(kw)) return Icon
+    }
+  }
+  return Link2
 }
 
 interface MenuNode {
@@ -201,49 +242,71 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
         : 'bg-background border-b'
     }`}>
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <Link href="/">
               <DivLogo />
             </Link>
+            {/* Divider logo | nav */}
+            <div className="hidden md:block h-8 w-px bg-gradient-to-b from-transparent via-[#0f766e]/40 to-transparent" />
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5">
             {menuTree.map((node) => {
-              const Icon = getIcon(node.item.icon)
+              const Icon = getIcon(node.item.icon, node.item.displayName)
               return node.children.length > 0 ? (
                 <DropdownMenu key={node.item.id}>
                   <DropdownMenuTrigger asChild>
-                    <button className="group flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent outline-none">
-                      <Icon className="h-4 w-4" />
+                    <button className="group flex items-center gap-2 px-4 py-2.5 text-[0.9rem] font-medium text-gray-600 rounded-lg outline-none
+                      transition-all duration-200
+                      hover:text-[#0f766e] hover:bg-[#0f766e]/8
+                      data-[state=open]:text-[#0f766e] data-[state=open]:bg-[#0f766e]/10">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-md
+                        bg-[#0f766e]/10 text-[#0f766e] group-hover:bg-[#0f766e] group-hover:text-white
+                        group-data-[state=open]:bg-[#0f766e] group-data-[state=open]:text-white
+                        transition-all duration-200 shrink-0">
+                        <Icon className="h-3.5 w-3.5" />
+                      </span>
                       {node.item.displayName}
-                      <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />
+                      <ChevronDown className="h-3.5 w-3.5 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180 shrink-0" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48">
-                    {node.children.map((child) => (
-                      <DropdownMenuItem key={child.item.id} asChild>
-                        <Link href={child.item.url ?? '#'} className="cursor-pointer">
-                          {child.item.displayName}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
+                  <DropdownMenuContent align="start" className="w-52 p-1.5 rounded-xl shadow-lg border-gray-100">
+                    {node.children.map((child) => {
+                      const ChildIcon = getIcon(child.item.icon, child.item.displayName)
+                      return (
+                        <DropdownMenuItem key={child.item.id} asChild>
+                          <Link
+                            href={child.item.url ?? '#'}
+                            className="cursor-pointer flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600
+                              hover:text-[#0f766e] hover:bg-[#0f766e]/8 transition-colors"
+                          >
+                            <ChildIcon className="h-4 w-4 text-[#14b8a6] shrink-0" />
+                            {child.item.displayName}
+                          </Link>
+                        </DropdownMenuItem>
+                      )
+                    })}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
                 <Link
                   key={node.item.id}
                   href={node.item.url ?? '#'}
-                  className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground rounded-md hover:bg-accent"
+                  className="group flex items-center gap-2 px-4 py-2.5 text-[0.9rem] font-medium text-gray-600 rounded-lg
+                    transition-all duration-200 hover:text-[#0f766e] hover:bg-[#0f766e]/8"
                 >
-                  <Icon className="h-4 w-4" />
+                  <span className="flex items-center justify-center w-6 h-6 rounded-md
+                    bg-[#0f766e]/10 text-[#0f766e] group-hover:bg-[#0f766e] group-hover:text-white
+                    transition-all duration-200 shrink-0">
+                    <Icon className="h-3.5 w-3.5" />
+                  </span>
                   {node.item.displayName}
                 </Link>
               )
-            }
-            )}
+            })}
           </nav>
 
           {/* Mobile Menu */}
@@ -317,65 +380,82 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
           </Sheet>
 
           {/* Desktop User Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <SearchDropdown keywords={searchKeywords} />
+
+            {/* Divider */}
+            <div className="h-6 w-px bg-gray-200" />
+
             {sessionData.data?.isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
-                    <CircleUser className="h-4 w-4" />
-                    <span className="sr-only">Toggle user menu</span>
-                  </Button>
+                  <button className="group flex items-center gap-2.5 px-3 py-2 rounded-xl
+                    bg-gradient-to-br from-[#0f766e] to-[#14b8a6]
+                    text-white shadow-md shadow-teal-500/25
+                    hover:shadow-lg hover:shadow-teal-500/35 hover:-translate-y-0.5
+                    active:translate-y-0 transition-all duration-200 outline-none">
+                    <CircleUser className="h-5 w-5" />
+                    <span className="text-sm font-semibold max-w-[80px] truncate">
+                      {sessionData.data.userInfo?.name?.split(' ').pop() || 'User'}
+                    </span>
+                    <ChevronDown className="h-3.5 w-3.5 opacity-70 transition-transform group-data-[state=open]:rotate-180" />
+                  </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{sessionData.data.userInfo?.name || 'User'}</p>
-                      <p className="w-[200px] truncate text-sm text-muted-foreground">
-                        {sessionData.data.userInfo?.email || 'No email available'}
+                <DropdownMenuContent className="w-56 rounded-xl p-1.5 shadow-xl" align="end" forceMount>
+                  <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-[#0f766e] to-[#14b8a6] text-white shrink-0">
+                      <CircleUser className="h-5 w-5" />
+                    </div>
+                    <div className="flex flex-col leading-tight">
+                      <p className="font-semibold text-sm text-gray-800">{sessionData.data.userInfo?.name || 'User'}</p>
+                      <p className="text-xs text-gray-400 truncate max-w-[140px]">
+                        {sessionData.data.userInfo?.email || ''}
                       </p>
                     </div>
                   </div>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="my-1" />
                   <Link href="/admin" className="cursor-pointer">
-                    <DropdownMenuItem className="flex items-center gap-2">
-                      <Zap className="h-4 w-4" />
+                    <DropdownMenuItem className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 hover:text-[#0f766e] hover:bg-[#0f766e]/8 cursor-pointer">
+                      <Zap className="h-4 w-4 text-[#14b8a6]" />
                       Admin Panel
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/admin/profile" className="cursor-pointer">
-                    <DropdownMenuItem className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Profile
+                    <DropdownMenuItem className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 hover:text-[#0f766e] hover:bg-[#0f766e]/8 cursor-pointer">
+                      <User className="h-4 w-4 text-[#14b8a6]" />
+                      Hồ sơ
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/admin/settings" className="cursor-pointer">
-                    <DropdownMenuItem className="flex items-center gap-2">
-                      <Settings className="h-4 w-4" />
-                      Settings
+                    <DropdownMenuItem className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 hover:text-[#0f766e] hover:bg-[#0f766e]/8 cursor-pointer">
+                      <Settings className="h-4 w-4 text-[#14b8a6]" />
+                      Cài đặt
                     </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="my-1" />
                   <ClientLink
                     href="/auth/logout"
                     variant={'ghost'}
                     size={'sm'}
-                    className="cursor-pointer w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
+                    className="cursor-pointer w-full justify-start"
                   >
-                    <DropdownMenuItem className="flex items-center gap-2 text-red-600">
+                    <DropdownMenuItem className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer">
                       <LogOut className="h-4 w-4" />
-                      Logout
+                      Đăng xuất
                     </DropdownMenuItem>
                   </ClientLink>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center gap-2">
-                <ClientLink href="/auth/login" variant="ghost" size="sm">
-                  <LogIn className="h-4 w-4 mr-1" />
-                  Sign In
-                </ClientLink>
-              </div>
+              <ClientLink href="/auth/login"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
+                  bg-gradient-to-br from-[#0f766e] to-[#14b8a6] text-white
+                  shadow-md shadow-teal-500/25 hover:shadow-lg hover:shadow-teal-500/35
+                  hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              >
+                <LogIn className="h-4 w-4" />
+                Đăng nhập
+              </ClientLink>
             )}
           </div>
         </div>
