@@ -183,9 +183,13 @@ export default function EditBlogPostPage() {
         {/* Main editor */}
         <div className="col-span-2 space-y-4">
           <div>
-            <label className="text-xs font-medium text-gray-600 mb-1 block">Tiêu đề *</label>
+            <label className="text-xs font-medium text-gray-600 mb-1 flex justify-between">
+              <span>Tiêu đề *</span>
+              <span className={title.length > 90 ? 'text-red-500 font-bold' : 'text-gray-400'}>({title.length}/100)</span>
+            </label>
             <Input
               value={title}
+              maxLength={100}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Tiêu đề bài viết"
               className="text-base font-medium"
@@ -240,12 +244,16 @@ export default function EditBlogPostPage() {
 
           {/* Mô tả ngắn */}
           <div className="border rounded-lg p-4 space-y-2">
-            <p className="text-sm font-semibold text-gray-700">Mô tả ngắn</p>
+            <div className="flex justify-between items-center">
+              <p className="text-sm font-semibold text-gray-700">Mô tả ngắn</p>
+              <span className={`text-xs ${shortDesc.length > 550 ? 'text-red-500 font-bold' : 'text-gray-400'}`}>({shortDesc.length}/600)</span>
+            </div>
             <textarea
               value={shortDesc}
+              maxLength={600}
               onChange={(e) => setShortDesc(e.target.value)}
               placeholder="Tóm tắt bài viết, hiển thị dưới tiêu đề..."
-              rows={4}
+              rows={5}
               className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-400"
             />
           </div>

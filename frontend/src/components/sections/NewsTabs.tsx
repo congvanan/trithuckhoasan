@@ -58,14 +58,15 @@ export function NewsTabs({ chuyenNganhPosts, quocTePosts }: NewsTabsProps) {
   const postsMap = [chuyenNganhPosts, quocTePosts]
 
   return (
-    <section className="w-full py-12 md:py-16 bg-gray-50 dark:bg-gray-900">
+    <section className="w-full py-16 md:py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container px-4 md:px-6">
         <div className="flex justify-center gap-4 mb-8">
           {TABS.map((tab, i) => (
             <button key={tab.blogSlug} onClick={() => setActiveTab(i)}
-              className={`px-8 py-3 rounded-full font-semibold text-sm uppercase tracking-wide transition-colors border-2 ${
-                activeTab === i ? 'bg-blue-500 border-blue-500 text-white shadow-md'
-                : 'bg-white dark:bg-gray-800 border-gray-300 text-gray-600 hover:border-blue-400'
+              className={`px-8 py-3 rounded-full font-semibold text-sm uppercase tracking-wide transition-all border-2 ${
+                activeTab === i
+                  ? 'bg-[#0f766e] border-[#0f766e] text-white shadow-md'
+                  : 'bg-white dark:bg-gray-800 border-[#14b8a6] text-[#0f766e] hover:bg-teal-50'
               }`}>{tab.label}</button>
           ))}
         </div>

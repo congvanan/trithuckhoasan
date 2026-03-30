@@ -53,11 +53,11 @@ export async function GET() {
   await create({ displayName: 'Phụ khoa', url: '/blog/phu-khoa', parentId: kt.id, order: 2, isActive: true, icon: 'stethoscope' })
   await create({ displayName: 'Sơ sinh', url: '/blog/so-sinh', parentId: kt.id, order: 3, isActive: true, icon: 'baby' })
 
-  // Nghiên cứu
-  const nc = await create({ displayName: 'Nghiên cứu', url: '#', order: 4, isActive: true, icon: 'microscope' })
-  results.push('✅ Nghiên cứu')
-  await create({ displayName: 'Tin chuyên ngành', url: '/blog/tin-chuyen-nghanh', parentId: nc.id, order: 1, isActive: true, icon: 'book' })
-  await create({ displayName: 'Tin quốc tế', url: '/blog/tin-quoc-te', parentId: nc.id, order: 2, isActive: true, icon: 'microscope' })
+  // Tin tức
+  const tt = await create({ displayName: 'Tin tức', url: '#', order: 4, isActive: true, icon: 'book-open' })
+  results.push('✅ Tin tức')
+  await create({ displayName: 'Tin chuyên ngành', url: '/blog/tin-chuyen-nghanh', parentId: tt.id, order: 1, isActive: true, icon: 'book' })
+  await create({ displayName: 'Tin quốc tế', url: '/blog/tin-quoc-te', parentId: tt.id, order: 2, isActive: true, icon: 'microscope' })
 
   // Tư vấn
   await create({ displayName: 'Tư vấn', url: '/tu-van', order: 5, isActive: true, icon: 'message-circle' })

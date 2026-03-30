@@ -1,7 +1,7 @@
 import { DoctorSidebar } from '@/components/page/DoctorSidebar'
 import { fetchBlogPosts } from '@/lib/server/fetchBlogPosts'
 
-const BLOG_SLUGS = ['tin-chuyen-nghanh', 'tin-quoc-te']
+const BLOG_SLUGS = ['tin-chuyen-nghanh', 'tin-quoc-te', 'banner-slide', 'tin-noi-bat', 'san-khoa', 'phu-khoa', 'so-sinh']
 
 export async function generateStaticParams() {
   const results = await Promise.all(
@@ -29,9 +29,12 @@ async function fetchPost(blogSlug: string, slug: string) {
   try {
     const res = await fetch(
       `${baseUrl}/api/cms-kit-public/blog-posts/${blogSlug}/${slug}`,
-      process.env.NODE_ENV === 'development'
-        ? { cache: 'no-store' }
-        : { next: { revalidate: 300 } }
+      {
+        signal: AbortSignal.timeout(5000),
+        next: process.env.NODE_ENV === 'development'
+          ? { revalidate: 10, tags: ['blog-posts'] }
+          : { revalidate: 300, tags: ['blog-posts'] },
+      }
     )
     if (!res.ok) return null
     return await res.json()
@@ -59,9 +62,16 @@ export default async function BlogPostDetailPage({
     : null
   const descText = hasCoverInDesc ? rawDesc.slice(rawDesc.indexOf('|') + 1) : rawDesc
 
-  const blogLabel = blogSlug
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (c: string) => c.toUpperCase())
+  const BLOG_LABELS: Record<string, string> = {
+    'tin-chuyen-nghanh': 'Tin chuyên ngành',
+    'tin-quoc-te': 'Tin quốc tế',
+    'san-khoa': 'Sản khoa',
+    'phu-khoa': 'Phụ khoa',
+    'so-sinh': 'Sơ sinh',
+    'tin-noi-bat': 'Tin nổi bật',
+    'banner-slide': 'Banner',
+  }
+  const blogLabel = BLOG_LABELS[blogSlug] ?? blogSlug
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-6">
@@ -81,13 +91,7 @@ export default async function BlogPostDetailPage({
       <div className="flex gap-8 items-start">
         {/* Main content */}
         <article className="flex-1 min-w-0">
-          {coverUrl && (
-            <div className="mb-6 rounded-xl overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={coverUrl} alt={post.title ?? ''} className="w-full max-h-96 object-cover" />
-            </div>
-          )}
-
+          {/* Tiêu đề trước — theo chuẩn báo hiện đại */}
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight">
             {post.title}
           </h1>
@@ -106,6 +110,14 @@ export default async function BlogPostDetailPage({
             <p className="text-gray-600 text-base italic mb-6 bg-blue-50 border-l-4 border-blue-400 px-4 py-3 rounded-r">
               {descText}
             </p>
+          )}
+
+          {/* Ảnh bìa sau lead paragraph */}
+          {coverUrl && (
+            <div className="mb-8 rounded-xl overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={coverUrl} alt={post.title ?? ''} className="w-full max-h-[480px] object-cover" />
+            </div>
           )}
 
           <div

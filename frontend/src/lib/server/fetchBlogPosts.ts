@@ -6,11 +6,12 @@ export async function fetchBlogPosts(blogSlug: string, limit = 4): Promise<BlogP
   if (!baseUrl) return []
   try {
     const url = `${baseUrl}/api/cms-kit-public/blog-posts/${blogSlug}?MaxResultCount=${limit}&SkipCount=0`
-    const res = await fetch(url,
-      process.env.NODE_ENV === 'development'
-        ? { cache: 'no-store' }
-        : { next: { revalidate: 60 } }
-    )
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(5000),
+      next: process.env.NODE_ENV === 'development'
+        ? { revalidate: 30, tags: ['blog-posts'] }
+        : { revalidate: 60, tags: ['blog-posts'] },
+    })
     if (!res.ok) return []
     const data = await res.json()
     return data?.items ?? []

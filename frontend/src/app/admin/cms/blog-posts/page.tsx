@@ -237,13 +237,13 @@ function BlogPostsContent() {
             </div>
             <div>
               <label className="text-xs font-medium text-gray-600 mb-1 block">
-                Tiêu đề * <span className={title.length > 64 ? 'text-red-500 font-bold' : 'text-gray-400'}>({title.length}/64)</span>
+                Tiêu đề * <span className={title.length > 90 ? 'text-red-500 font-bold' : 'text-gray-400'}>({title.length}/100)</span>
               </label>
               <Input
                 value={title}
-                maxLength={64}
+                maxLength={100}
                 onChange={(e) => { setTitle(e.target.value); setSlug(generateSlug(e.target.value)) }}
-                placeholder="Tiêu đề bài viết (tối đa 64 ký tự)"
+                placeholder="Tiêu đề bài viết (tối đa 100 ký tự)"
               />
             </div>
             <div>
@@ -251,8 +251,11 @@ function BlogPostsContent() {
               <Input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="tieu-de-bai-viet" />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1 block">Mô tả ngắn</label>
-              <Input value={shortDesc} onChange={(e) => setShortDesc(e.target.value)} placeholder="Tóm tắt bài viết..." />
+              <label className="text-xs font-medium text-gray-600 mb-1 flex justify-between">
+                <span>Mô tả ngắn</span>
+                <span className={`${shortDesc.length > 550 ? 'text-red-500 font-bold' : 'text-gray-400'}`}>({shortDesc.length}/600)</span>
+              </label>
+              <Input value={shortDesc} maxLength={600} onChange={(e) => setShortDesc(e.target.value)} placeholder="Tóm tắt bài viết..." />
             </div>
             <div className="col-span-2">
               <label className="text-xs font-medium text-gray-600 mb-1 block">Ảnh bìa</label>
@@ -272,7 +275,7 @@ function BlogPostsContent() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleCreate} disabled={saving || !title || !slug || !blogId || title.length > 64}>
+            <Button onClick={handleCreate} disabled={saving || !title || !slug || !blogId || title.length > 100}>
               {saving ? 'Đang lưu...' : 'Lưu nháp'}
             </Button>
             <Button variant="outline" onClick={() => setShowForm(false)}>Hủy</Button>

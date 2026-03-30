@@ -1,0 +1,27 @@
+[
+  {
+    "id": "hero",
+    "label": "Tin nổi bật",
+    "visible": true
+  },
+  {
+    "id": "features",
+    "label": "Tính năng nổi bật",
+    "visible": true
+  },
+  {
+    "id": "banner",
+    "label": "Banner Slider",
+    "visible": true
+  },
+  {
+    "id": "news",
+    "label": "Tin tức mới nhất",
+    "visible": true
+  },
+  {
+    "id": "kienthuc",
+    "label": "Kiến thức chuyên khoa",
+    "visible": true
+  }
+]

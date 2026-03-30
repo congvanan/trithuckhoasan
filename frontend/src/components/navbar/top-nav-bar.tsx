@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { DivLogo } from '@/components/div-logo'
 import useSession from '@/useSession'
 import {
+  ArrowRight,
   CircleUser,
   Menu,
   ChevronDown,
@@ -35,8 +36,106 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import type { MenuItemDto } from '@/client/types.gen'
+
+// ── Search dropdown ────────────────────────────────────────────────────────
+function SearchDropdown({ keywords = ['Sản khoa', 'Phụ khoa', 'Sơ sinh', 'IVF'] }: { keywords?: string[] }) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const router = useRouter()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const wrapRef = useRef<HTMLDivElement>(null)
+
+  // Focus input khi mở
+  useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 80)
+  }, [open])
+
+  // Đóng khi click ra ngoài
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const submit = () => {
+    const q = query.trim()
+    if (!q) { inputRef.current?.focus(); return }
+    router.push(`/timkiem?q=${encodeURIComponent(q)}`)
+    setOpen(false)
+    setQuery('')
+  }
+
+  return (
+    <div ref={wrapRef} className="relative">
+      {/* Trigger: search icon */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors
+          ${open ? 'bg-[#0f766e]/10 text-[#0f766e]' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`}
+        aria-label="Tìm kiếm"
+      >
+        <Search className="h-4 w-4" />
+      </button>
+
+      {/* Dropdown panel */}
+      {open && (
+        <div className="absolute right-0 top-full mt-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-3 w-72">
+            <form
+              onSubmit={(e) => { e.preventDefault(); submit() }}
+              className="flex items-center gap-2"
+            >
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Nhập từ khóa..."
+                  className="w-full pl-8 pr-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700
+                             bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                             placeholder:text-gray-400 outline-none
+                             focus:border-[#14b8a6] focus:ring-2 focus:ring-[#14b8a6]/20 transition-all"
+                />
+              </div>
+              {/* Arrow button */}
+              <button
+                type="submit"
+                className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0
+                           bg-[#0f766e] text-white shadow-sm
+                           hover:bg-[#0d9488] active:scale-95 transition-all duration-150"
+                aria-label="Tìm kiếm"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </form>
+
+            {/* Quick links */}
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {keywords.map((kw) => (
+                <button
+                  key={kw}
+                  type="button"
+                  onClick={() => { router.push(`/timkiem?q=${encodeURIComponent(kw)}`); setOpen(false); setQuery('') }}
+                  className="text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700
+                             text-gray-500 hover:border-[#14b8a6] hover:text-[#0f766e] transition-colors"
+                >
+                  {kw}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 const ICON_MAP: Record<string, LucideIcon> = {
   home: Home,
@@ -81,9 +180,10 @@ function buildMenuTree(items: MenuItemDto[]): MenuNode[] {
 
 interface TopNavBarProps {
   initialMenuItems?: MenuItemDto[]
+  searchKeywords?: string[]
 }
 
-export default function TopNavBar({ initialMenuItems = [] }: TopNavBarProps) {
+export default function TopNavBar({ initialMenuItems = [], searchKeywords }: TopNavBarProps) {
   const sessionData = useSession()
   const [isScrolled, setIsScrolled] = useState(false)
   const [menuTree] = useState<MenuNode[]>(() => buildMenuTree(initialMenuItems))
@@ -218,9 +318,7 @@ export default function TopNavBar({ initialMenuItems = [] }: TopNavBarProps) {
 
           {/* Desktop User Actions */}
           <div className="flex items-center gap-2">
-            <Link href="/timkiem" className="flex items-center gap-1.5 px-2 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors" title="Tìm kiếm">
-              <Search className="h-4 w-4" />
-            </Link>
+            <SearchDropdown keywords={searchKeywords} />
             {sessionData.data?.isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

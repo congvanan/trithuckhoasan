@@ -4,6 +4,11 @@ import type { MenuItemDto } from '@/client/types.gen'
 
 const TopNavBar = dynamic(() => import('./top-nav-bar'), { ssr: false })
 
-export function NavbarWrapper({ initialMenuItems }: { initialMenuItems: MenuItemDto[] }) {
-  return <TopNavBar initialMenuItems={initialMenuItems} />
+interface NavbarWrapperProps {
+  initialMenuItems: MenuItemDto[]
+  searchKeywords?: string[]
+}
+
+export function NavbarWrapper({ initialMenuItems, searchKeywords }: NavbarWrapperProps) {
+  return <TopNavBar initialMenuItems={initialMenuItems} searchKeywords={searchKeywords} />
 }

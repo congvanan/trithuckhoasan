@@ -1,28 +1,31 @@
-'use client'
-
-import { getDoctorBySlug } from '@/lib/data/doctors'
-import { getMediaUrl, getAvatarFallback } from '@/lib/utils/media'
+import { getDoctorBySlug, DOCTORS } from '@/lib/data/doctors'
+import { getMediaUrl } from '@/lib/utils/media'
 import { ChevronRight, GraduationCap, Award, Briefcase } from 'lucide-react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { notFound } from 'next/navigation'
 
-export default function DoctorDetailPage() {
-  const params = useParams()
-  const slug = params.slug as string
+export function generateStaticParams() {
+  return DOCTORS.map((d) => ({ slug: d.slug }))
+}
+
+export const revalidate = 3600
+
+function getInitials(name: string) {
+  const parts = name.replace(/^(BS|BSCKI|BSCKII|ThS|PGS|GS)\.?\s*/i, '').trim().split(' ')
+  return parts.slice(-2).map((w: string) => w[0] ?? '').join('').toUpperCase()
+}
+
+export default async function DoctorDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
   const doctor = getDoctorBySlug(slug)
 
-  if (!doctor) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold mb-2">Không tìm thấy bác sĩ</h2>
-        <Link href="/bac-si" className="text-blue-600 hover:underline">
-          Quay lại danh sách bác sĩ
-        </Link>
-      </div>
-    )
-  }
+  if (!doctor) notFound()
 
-  const imageSrc = getMediaUrl(doctor.mediaId) ?? getAvatarFallback(doctor.name, 160)
+  const mediaUrl = getMediaUrl(doctor.mediaId)
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
@@ -46,18 +49,21 @@ export default function DoctorDetailPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
           <div className="flex flex-col md:flex-row gap-0">
-            {/* Left: Photo — fixed 200px */}
+            {/* Left: Photo */}
             <div className="w-full md:w-[200px] shrink-0 flex flex-col items-center justify-start py-6 px-4 bg-white dark:bg-gray-800">
-              <div className="w-[160px] h-[200px] overflow-hidden bg-gray-100 mb-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageSrc}
-                  alt={doctor.name}
-                  className="w-full h-full object-cover object-top"
-                  onError={(e) => {
-                    ;(e.target as HTMLImageElement).src = getAvatarFallback(doctor.name, 160)
-                  }}
-                />
+              <div className="w-[160px] h-[200px] overflow-hidden bg-blue-100 mb-3 flex items-center justify-center">
+                {mediaUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={mediaUrl}
+                    alt={doctor.name}
+                    className="w-full h-full object-cover object-top"
+                  />
+                ) : (
+                  <span className="text-blue-700 font-bold text-4xl select-none">
+                    {getInitials(doctor.name)}
+                  </span>
+                )}
               </div>
               <span className="text-xs border border-gray-400 text-gray-500 rounded px-2 py-0.5 mb-2">
                 {doctor.title}
@@ -67,9 +73,8 @@ export default function DoctorDetailPage() {
               </h2>
             </div>
 
-            {/* Right: Info — takes remaining space */}
+            {/* Right: Info */}
             <div className="flex-1 min-w-0 p-6 md:p-8 border-l border-gray-200 dark:border-gray-700">
-              {/* Header */}
               <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">
                   {doctor.title} - {doctor.name}
@@ -79,10 +84,8 @@ export default function DoctorDetailPage() {
                 </p>
               </div>
 
-              {/* Experience section */}
               <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-3">Kinh nghiệm</h3>
               <div className="space-y-2">
-                {/* Current position */}
                 <div className="flex gap-6 items-start bg-gray-50 dark:bg-gray-900/50 rounded-lg px-4 py-3">
                   <div className="flex items-center gap-2 w-36 shrink-0 text-sm text-gray-500 dark:text-gray-400">
                     <Briefcase className="w-4 h-4" />
@@ -93,7 +96,6 @@ export default function DoctorDetailPage() {
                   </div>
                 </div>
 
-                {/* Education */}
                 <div className="flex gap-6 items-start bg-white dark:bg-gray-800 rounded-lg px-4 py-3">
                   <div className="flex items-center gap-2 w-36 shrink-0 text-sm text-gray-500 dark:text-gray-400">
                     <GraduationCap className="w-4 h-4" />
@@ -106,7 +108,6 @@ export default function DoctorDetailPage() {
                   </ul>
                 </div>
 
-                {/* Degrees */}
                 <div className="flex gap-6 items-start bg-gray-50 dark:bg-gray-900/50 rounded-lg px-4 py-3">
                   <div className="flex items-center gap-2 w-36 shrink-0 text-sm text-gray-500 dark:text-gray-400">
                     <Award className="w-4 h-4" />

@@ -63,7 +63,7 @@ export const PublicMenus: Array<PublicMenuItem> = [
       { Name: 'FIGO', Link: '#figo' },
       { Name: 'ACOG', Link: '#acog' },
       { Name: 'ISUOG', Link: '#isuog' },
-      { Name: 'HOSREM', Link: '#hosrem' },
+      { Name: 'Tri Thức Sản Khoa', Link: '#trithucsankhoa' },
     ],
   },
   {

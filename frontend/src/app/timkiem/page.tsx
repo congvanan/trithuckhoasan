@@ -34,7 +34,7 @@ async function fetchAllPosts(blogSlug: string): Promise<PostWithSlug[]> {
   try {
     const res = await fetch(
       `${baseUrl}/api/cms-kit-public/blog-posts/${blogSlug}?MaxResultCount=${MAX_FETCH}&SkipCount=0`,
-      { next: { revalidate: 120, tags: ['blog-posts'] } }
+      { signal: AbortSignal.timeout(5000), next: { revalidate: 120, tags: ['blog-posts'] } }
     )
     if (!res.ok) return []
     const data = await res.json()

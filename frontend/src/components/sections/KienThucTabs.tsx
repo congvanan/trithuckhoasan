@@ -71,7 +71,7 @@ export function KienThucTabs({ sanKhoaPosts, phuKhoaPosts, soSinhPosts }: KienTh
   const postsMap = [sanKhoaPosts, phuKhoaPosts, soSinhPosts]
 
   return (
-    <section className="w-full py-12 md:py-16 bg-white dark:bg-gray-950">
+    <section className="w-full py-16 md:py-20 bg-white dark:bg-gray-950">
       <div className="container px-4 md:px-6">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">
           Kiến thức chuyên khoa
@@ -81,10 +81,10 @@ export function KienThucTabs({ sanKhoaPosts, phuKhoaPosts, soSinhPosts }: KienTh
             <button
               key={tab.blogSlug}
               onClick={() => setActiveTab(i)}
-              className={`px-8 py-3 rounded-full font-semibold text-sm uppercase tracking-wide transition-colors border-2 ${
+              className={`px-8 py-3 rounded-full font-semibold text-sm uppercase tracking-wide transition-all border-2 ${
                 activeTab === i
-                  ? 'bg-blue-500 border-blue-500 text-white shadow-md'
-                  : 'bg-white dark:bg-gray-800 border-gray-300 text-gray-600 hover:border-blue-400'
+                  ? 'bg-[#0f766e] border-[#0f766e] text-white shadow-md'
+                  : 'bg-white dark:bg-gray-800 border-[#14b8a6] text-[#0f766e] hover:bg-teal-50'
               }`}
             >
               {tab.label}

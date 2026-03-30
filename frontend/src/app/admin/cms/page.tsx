@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useGrantedPolicies } from '@/lib/hooks/useGrantedPolicies'
 import { Permissions } from '@/lib/utils'
-import { FileText, MessageSquare, Plus, ImageIcon } from 'lucide-react'
+import { FileText, MessageSquare, Plus, ImageIcon, LayoutDashboard } from 'lucide-react'
 import Link from 'next/link'
 
 export default function CmsPage() {
@@ -95,6 +95,26 @@ export default function CmsPage() {
                 <Button size="sm" className="w-full">
                   <Plus className="w-4 h-4 mr-2" />
                   Upload ảnh
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <LayoutDashboard className="h-5 w-5" />
+              Bố cục trang chủ
+            </CardTitle>
+            <CardDescription>Sắp xếp và ẩn/hiện các phần trên trang chủ</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Kéo thả để đổi vị trí các section</span>
+              <Link href="/admin/cms/layout">
+                <Button variant="outline" size="sm">
+                  Cấu hình
                 </Button>
               </Link>
             </div>

@@ -1,6 +1,15 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Banner slider progress bar */
+@keyframes progress {
+  from { width: 0% }
+  to   { width: 100% }
+}
+.animate-progress {
+  animation: progress 5s linear forwards;
+}
+
 /* Custom utilities */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -8,6 +17,9 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+.animate-fadeIn {
+  animation: fade-in 0.5s ease-out both;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -71,12 +83,8 @@
     }
   }
   @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
   @keyframes slide-up {
     from {
@@ -151,15 +159,23 @@
 }
 
 .prose ul {
-  @apply text-foreground mb-4 list-inside list-disc;
+  @apply text-foreground mb-4 list-disc;
+  padding-left: 1.5em;
 }
 
 .prose ol {
-  @apply text-foreground mb-4 list-inside list-decimal;
+  @apply text-foreground mb-4 list-decimal;
+  padding-left: 1.5em;
 }
 
 .prose li {
   @apply text-foreground mb-1;
+}
+
+/* Tiptap bọc nội dung <li> trong <p> — xóa margin để không bị lệch dòng */
+.prose li > p {
+  display: inline;
+  margin: 0;
 }
 
 .prose a {
