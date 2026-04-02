@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Volo.Abp.Data;
@@ -23,17 +24,20 @@ public class MyAbpAppDbMigrationService : ITransientDependency
     private readonly IEnumerable<IMyAbpAppDbSchemaMigrator> _dbSchemaMigrators;
     private readonly ITenantRepository _tenantRepository;
     private readonly ICurrentTenant _currentTenant;
+    private readonly IConfiguration _configuration;
 
     public MyAbpAppDbMigrationService(
         IDataSeeder dataSeeder,
         IEnumerable<IMyAbpAppDbSchemaMigrator> dbSchemaMigrators,
         ITenantRepository tenantRepository,
-        ICurrentTenant currentTenant)
+        ICurrentTenant currentTenant,
+        IConfiguration configuration)
     {
         _dataSeeder = dataSeeder;
         _dbSchemaMigrators = dbSchemaMigrators;
         _tenantRepository = tenantRepository;
         _currentTenant = currentTenant;
+        _configuration = configuration;
 
         Logger = NullLogger<MyAbpAppDbMigrationService>.Instance;
     }
@@ -100,9 +104,12 @@ public class MyAbpAppDbMigrationService : ITransientDependency
     {
         Logger.LogInformation($"Executing {(tenant == null ? "host" : tenant.Name + " tenant")} database seed...");
 
+        var adminPassword = _configuration["App:AdminPassword"]
+            ?? throw new Exception("App:AdminPassword is not configured in appsettings.secrets.json");
+
         await _dataSeeder.SeedAsync(new DataSeedContext(tenant?.Id)
             .WithProperty(IdentityDataSeedContributor.AdminEmailPropertyName, IdentityDataSeedContributor.AdminEmailDefaultValue)
-            .WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName, "Ancv@12345")
+            .WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName, adminPassword)
         );
     }
 
