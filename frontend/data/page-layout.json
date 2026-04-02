@@ -5,8 +5,13 @@
     "visible": true
   },
   {
-    "id": "features",
-    "label": "Tính năng nổi bật",
+    "id": "news",
+    "label": "Tin tức mới nhất",
+    "visible": true
+  },
+  {
+    "id": "kienthuc",
+    "label": "Kiến thức chuyên khoa",
     "visible": true
   },
   {
@@ -15,13 +20,8 @@
     "visible": true
   },
   {
-    "id": "news",
-    "label": "Tin tức mới nhất",
-    "visible": true
-  },
-  {
-    "id": "kienthuc",
-    "label": "Kiến thức chuyên khoa",
+    "id": "features",
+    "label": "Tính năng nổi bật",
     "visible": true
   }
 ]

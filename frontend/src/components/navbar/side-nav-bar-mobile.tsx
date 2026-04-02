@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { AdminMenus } from '@/config'
 import { DivLogoCompact } from '@/components/div-logo'
 import { ChevronDown, ChevronRight, CircleUser, Menu, Package2, Settings, User, LogOut } from 'lucide-react'
@@ -65,6 +65,7 @@ export default function SideNavBarMobile() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col w-[300px] sm:w-[400px]">
+          <SheetTitle className="sr-only">Menu điều hướng Admin</SheetTitle>
           <div className="flex flex-col h-full">
             {/* Mobile Logo */}
             <div className="flex items-center gap-2 mb-6">

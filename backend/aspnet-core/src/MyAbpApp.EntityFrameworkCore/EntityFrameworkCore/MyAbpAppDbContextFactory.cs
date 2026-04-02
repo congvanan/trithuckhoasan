@@ -17,7 +17,7 @@ public class MyAbpAppDbContextFactory : IDesignTimeDbContextFactory<MyAbpAppDbCo
         var configuration = BuildConfiguration();
 
         var builder = new DbContextOptionsBuilder<MyAbpAppDbContext>()
-            .UseSqlServer(configuration.GetConnectionString("Default"));
+            .UseNpgsql(configuration.GetConnectionString("Default"));
 
         return new MyAbpAppDbContext(builder.Options);
     }

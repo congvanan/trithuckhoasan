@@ -261,7 +261,7 @@ export default function Home() {
         .filter((s) => s.visible)
         .map((s, i) => (
           <div key={s.id}>
-            {i > 0 && <div className="h-[200px]" />}
+            {i > 0 && <div className="h-[60px]" />}
             {renderSection(s.id)}
           </div>
         ))}

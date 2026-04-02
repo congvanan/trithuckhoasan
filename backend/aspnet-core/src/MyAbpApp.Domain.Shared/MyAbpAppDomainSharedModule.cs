@@ -10,6 +10,7 @@ using Volo.Abp.OpenIddict;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.CmsKit;
+using Volo.CmsKit.Blogs;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
@@ -33,6 +34,10 @@ public class MyAbpAppDomainSharedModule : AbpModule
     {
         MyAbpAppGlobalFeatureConfigurator.Configure();
         MyAbpAppModuleExtensionConfigurator.Configure();
+
+        // Mở rộng giới hạn ký tự BlogPost
+        BlogPostConsts.MaxTitleLength = 200;
+        BlogPostConsts.MaxShortDescriptionLength = 1000;
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)

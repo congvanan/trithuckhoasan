@@ -241,25 +241,25 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
         ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm'
         : 'bg-background border-b'
     }`}>
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex h-20 items-center justify-between">
+      <div className="w-full px-4 md:px-6">
+        <div className="flex h-[72px] items-center gap-3">
           {/* Logo */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 shrink-0">
             <Link href="/">
               <DivLogo />
             </Link>
             {/* Divider logo | nav */}
-            <div className="hidden md:block h-8 w-px bg-gradient-to-b from-transparent via-[#0f766e]/40 to-transparent" />
+            <div className="hidden md:block h-7 w-px bg-gradient-to-b from-transparent via-[#0f766e]/40 to-transparent" />
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-0.5">
+          {/* Desktop Navigation — flex-1 để co giãn tự động */}
+          <nav className="hidden md:flex flex-1 items-center gap-0 min-w-0 overflow-hidden">
             {menuTree.map((node) => {
               const Icon = getIcon(node.item.icon, node.item.displayName)
               return node.children.length > 0 ? (
                 <DropdownMenu key={node.item.id}>
                   <DropdownMenuTrigger asChild>
-                    <button className="group flex items-center gap-2 px-4 py-2.5 text-[0.9rem] font-medium text-gray-600 rounded-lg outline-none
+                    <button className="group flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 rounded-lg outline-none whitespace-nowrap
                       transition-all duration-200
                       hover:text-[#0f766e] hover:bg-[#0f766e]/8
                       data-[state=open]:text-[#0f766e] data-[state=open]:bg-[#0f766e]/10">
@@ -295,7 +295,7 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
                 <Link
                   key={node.item.id}
                   href={node.item.url ?? '#'}
-                  className="group flex items-center gap-2 px-4 py-2.5 text-[0.9rem] font-medium text-gray-600 rounded-lg
+                  className="group flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 rounded-lg whitespace-nowrap
                     transition-all duration-200 hover:text-[#0f766e] hover:bg-[#0f766e]/8"
                 >
                   <span className="flex items-center justify-center w-6 h-6 rounded-md
@@ -368,10 +368,10 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
                   ) : (
                     <ClientLink
                       href="/auth/login"
-                      className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-primary transition-colors hover:text-primary/80 hover:bg-primary/10 rounded-md"
+                      className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-[#0f766e] hover:bg-teal-50 rounded-md"
                     >
-                      <User className="h-4 w-4" />
-                      Login
+                      <LogIn className="h-4 w-4" />
+                      Đăng nhập
                     </ClientLink>
                   )}
                 </div>
