@@ -94,6 +94,8 @@ export default function MediaPage() {
   const [galleryMedia, setGalleryMedia] = useState<UploadedMedia[]>([])
   const [galleryRef] = [useRef<HTMLInputElement>(null)]
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [galleryPage, setGalleryPage] = useState(0)
+  const GALLERY_PAGE_SIZE = 10
 
   // Banner tab
   const [bannerMedia, setBannerMedia] = useState<UploadedMedia[]>([])
@@ -843,46 +845,64 @@ export default function MediaPage() {
               <ImageIcon className="w-10 h-10 mx-auto mb-2 opacity-30" />
               <p>Chưa có ảnh nào. Upload ảnh để bắt đầu.</p>
             </div>
-          ) : (
+          ) : (() => {
+            const totalGalleryPages = Math.ceil(galleryMedia.length / GALLERY_PAGE_SIZE)
+            const pageGallery = galleryMedia.slice(galleryPage * GALLERY_PAGE_SIZE, (galleryPage + 1) * GALLERY_PAGE_SIZE)
+            return (
+            <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {galleryMedia.map((media) => (
-                <div key={media.id} className="group relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-                  <div className="aspect-square">
+              {pageGallery.map((media) => (
+                <div key={media.id} className="group relative rounded-xl overflow-hidden border border-gray-200 bg-white flex flex-col">
+                  {/* Ảnh */}
+                  <div className="relative aspect-[4/3]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={media.url} alt={media.name} className="w-full h-full object-cover" />
+
+                    {/* Overlay actions */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                      <button
+                        onClick={() => copyUrl(media.url, media.id)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors w-full justify-center ${
+                          copiedId === media.id
+                            ? 'bg-green-500 text-white'
+                            : 'bg-white text-gray-800 hover:bg-teal-50'
+                        }`}
+                      >
+                        {copiedId === media.id ? (
+                          <><CheckCircle2 className="w-3.5 h-3.5" /> Đã copy!</>
+                        ) : (
+                          <><Copy className="w-3.5 h-3.5" /> Copy URL</>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => {
+                          const updated = galleryMedia.filter((m) => m.id !== media.id)
+                          setGalleryMedia(updated)
+                          lsSave(GALLERY_STORAGE_KEY, updated)
+                        }}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500 text-white hover:bg-red-600 w-full justify-center"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Xóa
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Overlay actions */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
-                    <button
-                      onClick={() => copyUrl(media.url, media.id)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors w-full justify-center ${
-                        copiedId === media.id
-                          ? 'bg-green-500 text-white'
-                          : 'bg-white text-gray-800 hover:bg-teal-50'
-                      }`}
-                    >
-                      {copiedId === media.id ? (
-                        <><CheckCircle2 className="w-3.5 h-3.5" /> Đã copy!</>
-                      ) : (
-                        <><Copy className="w-3.5 h-3.5" /> Copy URL</>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => {
-                        const updated = galleryMedia.filter((m) => m.id !== media.id)
+                  {/* Input tiêu đề */}
+                  <div className="px-2 pt-1.5 pb-2 border-t bg-white flex flex-col gap-1">
+                    <input
+                      type="text"
+                      placeholder="Nhập tiêu đề ảnh..."
+                      value={(media as UploadedMedia & { title?: string }).title ?? ''}
+                      onChange={(e) => {
+                        const updated = galleryMedia.map((m) =>
+                          m.id === media.id ? { ...m, title: e.target.value } : m
+                        )
                         setGalleryMedia(updated)
                         lsSave(GALLERY_STORAGE_KEY, updated)
                       }}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500 text-white hover:bg-red-600 w-full justify-center"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Xóa
-                    </button>
-                  </div>
-
-                  {/* Tên file */}
-                  <div className="px-2 py-1.5 text-xs text-gray-500 truncate border-t bg-white">
-                    {media.name}
+                      className="w-full text-xs border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-teal-400 placeholder:text-gray-300"
+                    />
+                    <span className="text-[10px] text-gray-300 truncate">{media.name}</span>
                   </div>
                 </div>
               ))}
@@ -896,7 +916,42 @@ export default function MediaPage() {
                 <span className="text-xs text-gray-400 mt-1">Thêm ảnh</span>
               </div>
             </div>
-          )}
+
+            {/* Pagination */}
+            {totalGalleryPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <button
+                  onClick={() => setGalleryPage((p) => Math.max(p - 1, 0))}
+                  disabled={galleryPage === 0}
+                  className="px-3 py-1.5 rounded border text-xs font-medium disabled:opacity-30 hover:bg-teal-50 hover:border-teal-400 hover:text-teal-700 transition-colors"
+                >
+                  ‹ Trước
+                </button>
+                {Array.from({ length: totalGalleryPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setGalleryPage(i)}
+                    className={`w-8 h-8 rounded text-xs font-semibold transition-colors ${
+                      i === galleryPage
+                        ? 'bg-teal-600 text-white'
+                        : 'border hover:bg-teal-50 hover:border-teal-400 hover:text-teal-700 text-gray-600'
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setGalleryPage((p) => Math.min(p + 1, totalGalleryPages - 1))}
+                  disabled={galleryPage === totalGalleryPages - 1}
+                  className="px-3 py-1.5 rounded border text-xs font-medium disabled:opacity-30 hover:bg-teal-50 hover:border-teal-400 hover:text-teal-700 transition-colors"
+                >
+                  Sau ›
+                </button>
+              </div>
+            )}
+            </>
+            )
+          })()}
         </div>
       )}
     </div>

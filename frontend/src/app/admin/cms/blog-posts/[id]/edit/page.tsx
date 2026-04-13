@@ -20,9 +20,13 @@ const RichTextEditor = dynamic(
 
 function parseCover(raw?: string | null) {
   if (!raw) return { cover: null, desc: '' }
-  const idx = raw.indexOf('|')
-  if (idx > 0 && raw.startsWith('http')) return { cover: raw.slice(0, idx), desc: raw.slice(idx + 1) }
-  return { cover: null, desc: raw }
+  const parts = raw.split('|')
+  const firstIsOrder = /^\d+$/.test(parts[0] ?? '')
+  const rest = firstIsOrder ? parts.slice(1).join('|') : raw
+  const idx = rest.indexOf('|')
+  const hasCover = idx > 0 && (rest.startsWith('http') || rest.startsWith('/api/'))
+  if (hasCover) return { cover: rest.slice(0, idx), desc: rest.slice(idx + 1) }
+  return { cover: null, desc: rest }
 }
 
 function encodeCover(coverUrl: string, desc: string) {
@@ -57,7 +61,6 @@ export default function EditBlogPostPage() {
     staleTime: 10 * 60 * 1000,
   })
 
-  // Load bài viết
   useEffect(() => {
     if (!postId) return
     blogPostAdminGet({ path: { id: postId } }).then((res) => {
@@ -115,7 +118,6 @@ export default function EditBlogPostPage() {
       setSaving(false)
       return
     }
-    // Lấy stamp mới sau update
     const updated = await blogPostAdminGet({ path: { id: postId } })
     setConcurrencyStamp(updated.data?.concurrencyStamp ?? '')
 
@@ -126,7 +128,6 @@ export default function EditBlogPostPage() {
       setPublishing(false)
     }
 
-    // Xóa cache trang chi tiết + trang chủ
     const blogSlug = blogsData?.find(b => b.id === blogId)?.slug ?? ''
     await revalidate(blogSlug)
 

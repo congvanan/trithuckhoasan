@@ -165,7 +165,7 @@ async function HeroSection() {
           Tin nổi bật
         </span>
         <h1 className="text-white font-extrabold leading-[1.1] tracking-tight mb-6" style={{ fontSize: 'clamp(1.9rem, 3.2vw, 3rem)' }}>
-          {featured?.title ?? 'Chào mừng đến Tri Thức Sản Khoa'}
+          {featured?.title ?? 'Chào mừng đến Sankhoa360'}
         </h1>
         {featuredDesc && (
           <p className="text-[#ccfbf1]/70 text-sm md:text-base leading-relaxed line-clamp-3 mb-8 max-w-sm">{featuredDesc}</p>

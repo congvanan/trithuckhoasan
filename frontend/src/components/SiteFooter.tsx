@@ -11,10 +11,10 @@ const ORG = {
   phone:       '0396 066 556',
   phoneNote:   'có Zalo OA',
   email:       'abc@gmail.com',
-  website:     'https://trithucsankhoa.vn',
-  facebook:    'https://facebook.com/trithucsankhoa',
+  website:     'https://sankhoa360.vn',
+  facebook:    'https://facebook.com/sankhoa360',
   fbLabel:     'Fanpage',
-  tiktok:      'https://tiktok.com/@trithucsankhoa',
+  tiktok:      'https://tiktok.com/@sankhoa360',
   tiktokLabel: 'Channel',
 }
 
@@ -23,7 +23,7 @@ const ORG = {
 const SOCIAL_LINKS: { label: string; href: string; svg?: string; icon?: React.ReactNode }[] = [
   {
     label: 'Facebook',
-    href: 'https://facebook.com/trithucsankhoa',
+    href: 'https://facebook.com/sankhoa360',
     svg: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z',
   },
   {
@@ -145,8 +145,8 @@ export function SiteFooter() {
 
         {/* Bottom bar */}
         <div className="mt-8 pt-5 border-t border-white/15 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/50">
-          <span>&copy; 2026 Tri Thức Sản Khoa. All rights reserved.</span>
-          <span>Tri Thức Sản Khoa – Kiến thức sản phụ khoa hàng đầu</span>
+          <span>&copy; 2026 Sankhoa360. All rights reserved.</span>
+          <span>Sankhoa360 – Kiến thức sản phụ khoa hàng đầu</span>
         </div>
       </div>
     </footer>

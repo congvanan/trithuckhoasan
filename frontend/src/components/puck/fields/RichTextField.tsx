@@ -132,7 +132,7 @@ export function RichTextField({ value, onChange, placeholder }: RichTextFieldPro
 
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '', false)
+      editor.commands.setContent(value || '', { emitUpdate: false })
     }
   }, [value, editor])
 
@@ -188,6 +188,13 @@ export function RichTextField({ value, onChange, placeholder }: RichTextFieldPro
     } else {
       editor.chain().focus().setLink({ href: url }).run()
     }
+  }, [editor])
+
+  const handleInsertImageByUrl = useCallback(() => {
+    if (!editor) return
+    const url = window.prompt('Nhập URL ảnh:')
+    if (!url) return
+    editor.chain().focus().setImage({ src: url, alt: '' }).run()
   }, [editor])
 
   if (!editor) return null
@@ -253,10 +260,11 @@ export function RichTextField({ value, onChange, placeholder }: RichTextFieldPro
 
         {/* Link + Image + HR */}
         <button style={btn(editor.isActive('link'))} title="Chèn/xóa liên kết" onClick={handleAddLink}>🔗</button>
-        <label style={{ ...btn(false), cursor: 'pointer' }} title="Chèn ảnh">
+        <label style={{ ...btn(false), cursor: 'pointer' }} title="Chèn ảnh (upload file)">
           🖼️
           <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
         </label>
+        <button style={btn(false)} title="Chèn ảnh bằng URL" onClick={handleInsertImageByUrl}>🔗🖼️</button>
         <button style={btn(false)} title="Đường kẻ ngang" onClick={() => editor.chain().focus().setHorizontalRule().run()}>─</button>
       </div>
 
