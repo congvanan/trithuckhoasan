@@ -137,11 +137,28 @@ async function HeroSection() {
   const BOUNDARY = 46
 
   return (
-    <section className="relative w-full overflow-hidden flex" style={{ height: 'clamp(480px, 58vw, 680px)' }}>
-      {/* Trái: nền teal */}
+    <section className="relative w-full overflow-hidden" style={{ height: 'clamp(480px, 58vw, 680px)' }}>
+      {/* Ảnh phủ toàn bộ phía sau */}
+      <div className="absolute inset-0" style={{ zIndex: 0 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={featuredCover || '/img/hero-medical.png'} alt={featured?.title ?? ''} className="w-full h-full object-cover" />
+      </div>
+
+      {/* Teal background — kéo rộng hơn để clip-path tạo cong mà không cắt text */}
       <div
-        className="relative flex flex-col justify-center px-8 md:px-12 lg:px-16 py-14 shrink-0"
-        style={{ width: `${BOUNDARY}%`, background: 'linear-gradient(160deg, #134e4a 0%, #0f766e 100%)', zIndex: 10 }}
+        className="absolute inset-y-0 left-0"
+        style={{
+          width: `calc(50% + 100px)`,
+          background: 'linear-gradient(160deg, #134e4a 0%, #0f766e 100%)',
+          clipPath: 'ellipse(85% 120% at 0% 50%)',
+          zIndex: 5,
+        }}
+      />
+
+      {/* Text content — giới hạn 50% để không bị cắt */}
+      <div
+        className="absolute inset-y-0 left-0 flex flex-col justify-center px-8 md:px-12 lg:px-16 py-14"
+        style={{ width: '50%', zIndex: 10 }}
       >
         <span className="inline-flex items-center gap-1.5 text-[#ccfbf1] text-[0.68rem] font-bold px-3 py-1 rounded-full w-fit mb-6 tracking-widest uppercase border border-white/20 bg-white/10">
           <Rocket className="w-3 h-3" />
@@ -162,32 +179,6 @@ async function HeroSection() {
           </Link>
         )}
       </div>
-
-      {/* Phải: ảnh */}
-      <div className="flex-1 relative" style={{ zIndex: 0 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={featuredCover || '/img/hero-medical.png'} alt={featured?.title ?? ''} className="absolute inset-0 w-full h-full object-cover" />
-      </div>
-
-      {/* Shape transition */}
-      <svg
-        className="absolute top-0 h-full hidden lg:block pointer-events-none"
-        style={{ left: `calc(${BOUNDARY}% - 4.5rem)`, width: '9rem', zIndex: 20 }}
-        viewBox="0 0 144 600"
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <linearGradient id="transitionShape" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%"   stopColor="#2dd4bf" />
-            <stop offset="45%"  stopColor="#14b8a6" />
-            <stop offset="100%" stopColor="#0d9488" />
-          </linearGradient>
-          <filter id="shapeShadow" x="-20%" y="0%" width="140%" height="100%">
-            <feDropShadow dx="4" dy="0" stdDeviation="6" floodColor="#0f766e" floodOpacity="0.35" />
-          </filter>
-        </defs>
-        <path d="M72,0 C144,80 144,520 72,600 C0,520 0,80 72,0 Z" fill="url(#transitionShape)" filter="url(#shapeShadow)" />
-      </svg>
     </section>
   )
 }

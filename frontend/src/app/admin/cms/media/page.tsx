@@ -36,11 +36,12 @@ type BannerPost = {
   rawShortDescription: string  // lưu để update
 }
 type UploadStatus = { name: string; status: 'uploading' | 'success' | 'error'; message?: string }
-type Tab = 'doctor' | 'banner'
+type Tab = 'doctor' | 'banner' | 'gallery'
 type SlideForm = { mediaItem: UploadedMedia; title: string; caption: string; saving: boolean }
 
 const STORAGE_KEY = 'cms-media-library'
 const BANNER_STORAGE_KEY = 'cms-banner-media'
+const GALLERY_STORAGE_KEY = 'cms-gallery-media'
 
 function ls<T>(key: string): T[] {
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : [] } catch { return [] }
@@ -89,6 +90,11 @@ export default function MediaPage() {
   const [mediaList, setMediaList] = useState<UploadedMedia[]>([])
   const [selectedDoctor, setSelectedDoctor] = useState('')
 
+  // Gallery tab
+  const [galleryMedia, setGalleryMedia] = useState<UploadedMedia[]>([])
+  const [galleryRef] = [useRef<HTMLInputElement>(null)]
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+
   // Banner tab
   const [bannerMedia, setBannerMedia] = useState<UploadedMedia[]>([])
   const [bannerPosts, setBannerPosts] = useState<BannerPost[]>([])
@@ -104,6 +110,7 @@ export default function MediaPage() {
   useEffect(() => {
     setMediaList(ls<UploadedMedia>(STORAGE_KEY))
     setBannerMedia(ls<UploadedMedia>(BANNER_STORAGE_KEY))
+    setGalleryMedia(ls<UploadedMedia>(GALLERY_STORAGE_KEY))
   }, [])
 
   // ── Fetch banner slides (admin API — hiện cả draft) ───────────────────────
@@ -163,7 +170,13 @@ export default function MediaPage() {
   }).catch(() => {})
 
   // ── Upload ────────────────────────────────────────────────────────────────────
-  const doUpload = async (files: FileList, isBanner: boolean) => {
+  const copyUrl = (url: string, id: string) => {
+    navigator.clipboard.writeText(url)
+    setCopiedId(id)
+    setTimeout(() => setCopiedId(null), 2000)
+  }
+
+  const doUpload = async (files: FileList, isBanner: boolean, isGallery = false) => {
     setIsUploading(true)
     const statuses: UploadStatus[] = Array.from(files).map((f) => ({ name: f.name, status: 'uploading' as const }))
     setUploadStatuses([...statuses])
@@ -209,7 +222,10 @@ export default function MediaPage() {
     }
 
     if (uploaded.length > 0) {
-      if (isBanner) {
+      if (isGallery) {
+        setGalleryMedia((prev) => { const u = [...uploaded, ...prev]; lsSave(GALLERY_STORAGE_KEY, u); return u })
+        toast({ title: `Upload ${uploaded.length} ảnh thành công`, description: 'Copy URL để chèn vào bài viết' })
+      } else if (isBanner) {
         setBannerMedia((prev) => { const u = [...uploaded, ...prev]; lsSave(BANNER_STORAGE_KEY, u); return u })
         if (uploaded.length === 1) {
           setSlideForm({ mediaItem: uploaded[0], title: '', caption: '', saving: false })
@@ -416,6 +432,16 @@ export default function MediaPage() {
               </Button>
             </>
           )}
+          {tab === 'gallery' && (
+            <>
+              <input ref={galleryRef} type="file" accept="image/*" multiple className="hidden"
+                onChange={(e) => e.target.files?.length && doUpload(e.target.files, false, true)} />
+              <Button onClick={() => galleryRef.current?.click()} disabled={isUploading}>
+                {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+                {isUploading ? 'Đang upload...' : 'Upload ảnh'}
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -428,6 +454,12 @@ export default function MediaPage() {
           <Images className="w-4 h-4" />Banner Slide
           {bannerPosts.length > 0 && (
             <span className="ml-1 bg-blue-100 text-blue-700 text-xs px-1.5 rounded-full">{publishedCount}/{bannerPosts.length}</span>
+          )}
+        </button>
+        <button className={tabCls('gallery')} onClick={() => setTab('gallery')}>
+          <ImageIcon className="w-4 h-4" />Thư viện ảnh
+          {galleryMedia.length > 0 && (
+            <span className="ml-1 bg-teal-100 text-teal-700 text-xs px-1.5 rounded-full">{galleryMedia.length}</span>
           )}
         </button>
       </div>
@@ -778,6 +810,93 @@ export default function MediaPage() {
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* ══ TAB: THƯ VIỆN ẢNH ══════════════════════════════════════════════════ */}
+      {tab === 'gallery' && (
+        <div className="space-y-6">
+          <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 text-sm text-teal-800">
+            <strong>Hướng dẫn:</strong> Upload ảnh → Copy URL → Paste vào nội dung bài viết qua editor. Bài viết có ≥2 ảnh sẽ tự động hiển thị grid thư viện ảnh bên dưới nội dung.
+          </div>
+
+          {/* Drop zone */}
+          <div
+            className="border-2 border-dashed border-gray-300 rounded-xl p-10 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-teal-400 hover:bg-teal-50/30 transition-all"
+            onClick={() => galleryRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); e.dataTransfer.files.length && doUpload(e.dataTransfer.files, false, true) }}
+          >
+            <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center">
+              <Upload className="w-6 h-6 text-teal-600" />
+            </div>
+            <div className="text-center">
+              <p className="font-medium text-gray-700">Kéo thả ảnh vào đây</p>
+              <p className="text-sm text-gray-400 mt-1">hoặc click để chọn file — hỗ trợ JPG, PNG, WebP</p>
+            </div>
+            {isUploading && <Loader2 className="w-5 h-5 animate-spin text-teal-600" />}
+          </div>
+
+          {/* Grid ảnh đã upload */}
+          {galleryMedia.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
+              <ImageIcon className="w-10 h-10 mx-auto mb-2 opacity-30" />
+              <p>Chưa có ảnh nào. Upload ảnh để bắt đầu.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {galleryMedia.map((media) => (
+                <div key={media.id} className="group relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                  <div className="aspect-square">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={media.url} alt={media.name} className="w-full h-full object-cover" />
+                  </div>
+
+                  {/* Overlay actions */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                    <button
+                      onClick={() => copyUrl(media.url, media.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors w-full justify-center ${
+                        copiedId === media.id
+                          ? 'bg-green-500 text-white'
+                          : 'bg-white text-gray-800 hover:bg-teal-50'
+                      }`}
+                    >
+                      {copiedId === media.id ? (
+                        <><CheckCircle2 className="w-3.5 h-3.5" /> Đã copy!</>
+                      ) : (
+                        <><Copy className="w-3.5 h-3.5" /> Copy URL</>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        const updated = galleryMedia.filter((m) => m.id !== media.id)
+                        setGalleryMedia(updated)
+                        lsSave(GALLERY_STORAGE_KEY, updated)
+                      }}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500 text-white hover:bg-red-600 w-full justify-center"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Xóa
+                    </button>
+                  </div>
+
+                  {/* Tên file */}
+                  <div className="px-2 py-1.5 text-xs text-gray-500 truncate border-t bg-white">
+                    {media.name}
+                  </div>
+                </div>
+              ))}
+
+              {/* Thêm ảnh */}
+              <div
+                className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-teal-400 hover:bg-teal-50/30 transition-colors"
+                onClick={() => galleryRef.current?.click()}
+              >
+                <Plus className="w-6 h-6 text-gray-300" />
+                <span className="text-xs text-gray-400 mt-1">Thêm ảnh</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

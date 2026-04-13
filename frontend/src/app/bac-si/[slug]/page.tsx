@@ -1,6 +1,6 @@
 import { getDoctorBySlug, DOCTORS } from '@/lib/data/doctors'
 import { getMediaUrl } from '@/lib/utils/media'
-import { ChevronRight, GraduationCap, Award, Briefcase } from 'lucide-react'
+import { ChevronRight, GraduationCap, Award, Briefcase, Globe } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -117,13 +117,33 @@ export default async function DoctorDetailPage({
                     {doctor.degrees.join(', ')}
                   </div>
                 </div>
-              </div>
 
-              {doctor.bio && (
-                <div className="mt-6 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                  {doctor.bio}
-                </div>
-              )}
+                {doctor.languages && doctor.languages.length > 0 && (
+                  <div className="flex gap-6 items-start bg-white dark:bg-gray-800 rounded-lg px-4 py-3">
+                    <div className="flex items-center gap-2 w-36 shrink-0 text-sm text-gray-500 dark:text-gray-400">
+                      <Globe className="w-4 h-4" />
+                      Ngôn ngữ
+                    </div>
+                    <div className="text-sm text-gray-700 dark:text-gray-200">
+                      {doctor.languages.join(', ')}
+                    </div>
+                  </div>
+                )}
+
+                {doctor.bio && doctor.bio.length > 0 && (
+                  <div className="flex gap-6 items-start bg-gray-50 dark:bg-gray-900/50 rounded-lg px-4 py-3">
+                    <div className="flex items-center gap-2 w-36 shrink-0 text-sm text-gray-500 dark:text-gray-400">
+                      <Briefcase className="w-4 h-4" />
+                      Hoạt động chuyên ngành
+                    </div>
+                    <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1 list-disc list-inside">
+                      {doctor.bio.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

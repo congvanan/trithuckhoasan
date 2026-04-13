@@ -12,6 +12,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Volo.CmsKit.Blogs;
 using Volo.CmsKit.EntityFrameworkCore;
 
 namespace MyAbpApp.EntityFrameworkCore;
@@ -75,6 +76,13 @@ public class MyAbpAppDbContext :
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
         builder.ConfigureCmsKit();
+
+        // Override ABP CmsKit default limits (mặc định 64 → tăng lên 256)
+        builder.Entity<BlogPost>(b =>
+        {
+            b.Property(x => x.Title).HasMaxLength(256);
+            b.Property(x => x.Slug).HasMaxLength(256);
+        });
 
         /* Configure your own tables/entities inside here */
 

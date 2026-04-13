@@ -71,16 +71,19 @@ export default function FeaturedPostPage() {
   })
   const featuredBlog = (blogsData ?? []).find((b: BlogDto) => b.slug === BLOG_SLUG)
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['admin-featured-posts'],
+  const blogId = featuredBlog?.id
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['admin-featured-posts', blogId],
     queryFn: async () => {
-      if (!featuredBlog?.id) return { items: [], totalCount: 0 }
+      if (!blogId) return { items: [], totalCount: 0 }
       const res = await blogPostAdminGetList({
-        query: { BlogId: featuredBlog.id, MaxResultCount: 20, SkipCount: 0 },
+        query: { BlogId: blogId, MaxResultCount: 20, SkipCount: 0 },
       })
       return res.data ?? { items: [], totalCount: 0 }
     },
-    enabled: !!featuredBlog?.id,
+    enabled: !!blogId,
+    staleTime: 0,
   })
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +120,7 @@ export default function FeaturedPostPage() {
     })
     setUploadingImageId(null)
     toast({ title: 'Đã cập nhật ảnh bìa' })
-    queryClient.invalidateQueries({ queryKey: ['admin-featured-posts'] })
+    await refetch()
   }
 
   const handleCreate = async () => {
@@ -130,12 +133,15 @@ export default function FeaturedPostPage() {
       },
     })
     setSaving(false)
+    console.log('[featured] create response:', JSON.stringify(res), 'status:', res.response?.status, 'data:', res.data, 'error:', JSON.stringify(res.error))
     if (res.error) {
-      toast({ title: 'Lỗi tạo bài', description: String(res.error), variant: 'destructive' })
+      const errDetail = (res.error as any)?.error?.message ?? (res.error as any)?.message ?? JSON.stringify(res.error)
+      toast({ title: 'Lỗi tạo bài', description: errDetail, variant: 'destructive' })
     } else {
       toast({ title: 'Đã tạo bài nổi bật', description: title })
       setTitle(''); setSlug(''); setShortDesc(''); setCoverImageUrl(''); setShowForm(false)
-      queryClient.invalidateQueries({ queryKey: ['admin-featured-posts'] })
+      const refetchResult = await refetch()
+      console.log('[featured] refetch result:', JSON.stringify(refetchResult.data))
     }
   }
 
@@ -144,7 +150,7 @@ export default function FeaturedPostPage() {
     await blogPostAdminPublish({ path: { id: post.id! } })
     setPublishingId(null)
     toast({ title: 'Đã xuất bản', description: `"${post.title}" hiển thị trên trang chủ` })
-    queryClient.invalidateQueries({ queryKey: ['admin-featured-posts'] })
+    await refetch()
   }
 
   const handleDelete = async (post: BlogPostListDto) => {
@@ -152,7 +158,7 @@ export default function FeaturedPostPage() {
     setDeletingId(post.id!)
     await blogPostAdminDelete({ path: { id: post.id! } })
     setDeletingId(null)
-    queryClient.invalidateQueries({ queryKey: ['admin-featured-posts'] })
+    await refetch()
   }
 
   if (!featuredBlog) {
@@ -201,11 +207,11 @@ export default function FeaturedPostPage() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-medium text-gray-600 mb-1 block">
-                Tiêu đề * <span className={title.length > 64 ? 'text-red-500 font-bold' : 'text-gray-400'}>({title.length}/64)</span>
+                Tiêu đề * <span className={title.length > 220 ? 'text-red-500 font-bold' : 'text-gray-400'}>({title.length}/256)</span>
               </label>
               <Input
                 value={title}
-                maxLength={64}
+                maxLength={256}
                 onChange={(e) => { setTitle(e.target.value); setSlug(generateSlug(e.target.value)) }}
                 placeholder="Tiêu đề bài viết nổi bật"
               />
@@ -236,7 +242,7 @@ export default function FeaturedPostPage() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleCreate} disabled={saving || !title || !slug || title.length > 64}>
+            <Button onClick={handleCreate} disabled={saving || !title || !slug || title.length > 256}>
               {saving ? 'Đang lưu...' : 'Lưu nháp'}
             </Button>
             <Button variant="outline" onClick={() => setShowForm(false)}>Hủy</Button>

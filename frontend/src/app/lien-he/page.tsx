@@ -7,6 +7,7 @@ import {
   MessageSquare, Shield, RefreshCw, AlertCircle,
 } from 'lucide-react'
 import Image from 'next/image'
+import { DOCTORS as DOCTOR_DATA } from '@/lib/data/doctors'
 
 // ──────────────────────────────────────────────────────────────────
 // ✏️  Cập nhật thông tin tại đây
@@ -25,18 +26,16 @@ const CONTACT_INFO = {
     'https://maps.google.com/maps?q=21.0424649,105.8441577&z=17&output=embed',
 }
 
-// ✏️  Danh sách bác sĩ liên hệ
-const DOCTORS = [
-  {
-    name:      'BS.CKI Trần Thị Mai Hoa',
-    title:     'Phó trưởng Khoa sản Bệnh Viện Hồng Ngọc Yên Ninh',
-    specialty: 'Sản Phụ Khoa –  Sức khỏe sinh sản',
-    phone:     '0396 066 556',
-    email:     'abc@gmail.com.vn',
-    avatar:    null as string | null,   // thay bằng URL ảnh thật
-  },
- 
-]
+// ✏️  Danh sách bác sĩ liên hệ — avatar lấy từ ABP Media (mediaId trong doctors.ts)
+const DOCTORS = DOCTOR_DATA.map((d) => ({
+  name:      `${d.title} ${d.name}`,
+  title:     `${d.currentPosition} · ${d.hospital}`,
+  specialty: d.specialty,
+  phone:     '',
+  email:     '',
+  avatar:    d.mediaId ? `/api/cms-kit/media/${d.mediaId}?v=${d.mediaId.slice(0, 8)}` : null as string | null,
+  slug:      d.slug,
+}))
 // ──────────────────────────────────────────────────────────────────
 
 interface FormState {
@@ -243,7 +242,8 @@ export default function LienHePage() {
                     {/* Avatar */}
                     <div className="shrink-0">
                       {doc.avatar ? (
-                        <Image src={doc.avatar} alt={doc.name} width={64} height={64}
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={doc.avatar} alt={doc.name}
                           className="w-16 h-16 rounded-full object-cover border-2 border-teal-100" />
                       ) : (
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-teal-700 flex items-center justify-center shrink-0">

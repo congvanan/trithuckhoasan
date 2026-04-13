@@ -63,8 +63,9 @@ public class MyAbpAppDomainModule : AbpModule
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
         });
 
-#if DEBUG
-        context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
-#endif
+        // NullEmailSender đã bị tắt để cho phép gửi email thật ngay cả khi DEBUG
+        // #if DEBUG
+        // context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
+        // #endif
     }
 }

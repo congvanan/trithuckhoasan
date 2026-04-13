@@ -129,7 +129,7 @@ function BlogPostsContent() {
     queryKey: ['admin-blog-posts', filterBlog],
     queryFn: async () => {
       const res = await blogPostAdminGetList({
-        query: { BlogId: filterBlog || undefined, MaxResultCount: 50, SkipCount: 0 },
+        query: { BlogId: filterBlog || undefined, MaxResultCount: 50, SkipCount: 0, Status: undefined },
       })
       return res.data ?? { items: [], totalCount: 0 }
     },
@@ -237,13 +237,13 @@ function BlogPostsContent() {
             </div>
             <div>
               <label className="text-xs font-medium text-gray-600 mb-1 block">
-                Tiêu đề * <span className={title.length > 90 ? 'text-red-500 font-bold' : 'text-gray-400'}>({title.length}/100)</span>
+                Tiêu đề * <span className={title.length > 220 ? 'text-red-500 font-bold' : 'text-gray-400'}>({title.length}/256)</span>
               </label>
               <Input
                 value={title}
-                maxLength={100}
+                maxLength={256}
                 onChange={(e) => { setTitle(e.target.value); setSlug(generateSlug(e.target.value)) }}
-                placeholder="Tiêu đề bài viết (tối đa 100 ký tự)"
+                placeholder="Tiêu đề bài viết"
               />
             </div>
             <div>
@@ -275,7 +275,7 @@ function BlogPostsContent() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleCreate} disabled={saving || !title || !slug || !blogId || title.length > 100}>
+            <Button onClick={handleCreate} disabled={saving || !title || !slug || !blogId || title.length > 256}>
               {saving ? 'Đang lưu...' : 'Lưu nháp'}
             </Button>
             <Button variant="outline" onClick={() => setShowForm(false)}>Hủy</Button>

@@ -242,7 +242,7 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
         : 'bg-background border-b'
     }`}>
       <div className="w-full px-4 md:px-6">
-        <div className="flex h-[72px] items-center gap-3">
+        <div className="flex h-[100px] items-center gap-3">
           {/* Logo */}
           <div className="flex items-center gap-3 shrink-0">
             <Link href="/">

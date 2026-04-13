@@ -56,14 +56,16 @@ export async function GET(request: NextRequest) {
 
   await session.save()
 
-  const redisSessionData = {
-    access_token: access_token,
-    refresh_token: refresh_token,
-  } as RedisSession
+  // Lưu vào Redis nếu có — không ảnh hưởng login nếu Redis không chạy
+  try {
+    const redisSessionData = { access_token, refresh_token } as RedisSession
+    const redis = createRedisInstance()
+    const redisKey = `session:${session.userInfo.sub}`
+    await redis.set(redisKey, JSON.stringify(redisSessionData))
+    await redis.quit()
+  } catch {
+    // Redis không chạy — login vẫn thành công nhờ iron-session cookie
+  }
 
-  const redis = createRedisInstance()
-  const redisKey = `session:${session.userInfo.sub}`
-  await redis.set(redisKey, JSON.stringify(redisSessionData))
-  await redis.quit()
   return Response.redirect(clientConfig.post_login_route)
 }

@@ -8,7 +8,8 @@
  */
 export function getMediaUrl(mediaId: string | null | undefined): string | null {
   if (!mediaId) return null
-  return `/api/cms-kit/media/${mediaId}`
+  // Thêm ?v=mediaId để bust cache mỗi khi mediaId thay đổi
+  return `/api/cms-kit/media/${mediaId}?v=${mediaId.slice(0, 8)}`
 }
 
 /**

@@ -7,7 +7,7 @@ interface ApiError extends Error {
   status?: number
 }
 
-const PUBLIC_API_PREFIXES = ['/api/cms-kit-public/']
+const PUBLIC_API_PREFIXES = ['/api/cms-kit-public/', '/api/cms-kit/media/']
 
 const isPublicEndpoint = (path: string): boolean => {
   return PUBLIC_API_PREFIXES.some((prefix) => path.startsWith(prefix))
@@ -94,7 +94,11 @@ const makeApiRequest = async (
 
   try {
     const path = request.nextUrl.pathname
-    const url = `${EXTERNAL_API_URL}${path}${request.nextUrl.search}`
+    // Loại bỏ ?v=xxx (cache-bust param) trước khi forward đến backend
+    const searchParams = new URLSearchParams(request.nextUrl.search)
+    searchParams.delete('v')
+    const search = searchParams.toString() ? `?${searchParams.toString()}` : ''
+    const url = `${EXTERNAL_API_URL}${path}${search}`
 
     const headers = await getHeaders(request, path)
 
@@ -192,7 +196,8 @@ const makeApiRequest = async (
         status: response.status,
         headers: {
           'Content-Type': responseContentType || 'application/octet-stream',
-          'Cache-Control': 'public, max-age=86400',
+          // Cache ảnh 1 giờ, sau đó revalidate ngầm — tránh stale lâu khi đổi mediaId
+          'Cache-Control': 'public, max-age=3600, stale-while-revalidate=60',
         },
       })
     }

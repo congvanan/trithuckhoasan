@@ -32,7 +32,7 @@ export function createRedisInstance(config = getRedisConfiguration()) {
       maxRetriesPerRequest: 0,
       retryStrategy: (times: number) => {
         if (times > 3) {
-          throw new Error(`[Redis] Could not connect after ${times} attempts`)
+          return null // Dừng retry, không throw để tránh uncaughtException
         }
         return Math.min(times * 200, 1000)
       },
