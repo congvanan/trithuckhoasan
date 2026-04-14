@@ -1,0 +1,165 @@
+<svg width="980" height="260" viewBox="0 0 980 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="outerGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(230 125) rotate(90) scale(120 180)">
+      <stop stop-color="#46FFF0" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#46FFF0" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="orbMain" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(214 116) rotate(135) scale(120)">
+      <stop offset="0" stop-color="#C8FFF8"/>
+      <stop offset="0.28" stop-color="#69FFF0"/>
+      <stop offset="0.58" stop-color="#16D6C9"/>
+      <stop offset="1" stop-color="#005C62"/>
+    </radialGradient>
+
+    <linearGradient id="orbRim" x1="120" y1="35" x2="315" y2="215" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D8FFFF"/>
+      <stop offset="0.35" stop-color="#79FFF4"/>
+      <stop offset="1" stop-color="#009A9A"/>
+    </linearGradient>
+
+    <linearGradient id="orbitGrad" x1="78" y1="168" x2="342" y2="168" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9FFFF7"/>
+      <stop offset="0.5" stop-color="#1CE1D4"/>
+      <stop offset="1" stop-color="#007F85"/>
+    </linearGradient>
+
+    <linearGradient id="textGrad" x1="380" y1="130" x2="960" y2="130" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#004D50"/>
+      <stop offset="0.55" stop-color="#007B82"/>
+      <stop offset="1" stop-color="#009B99"/>
+    </linearGradient>
+
+    <filter id="smallGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- General glow -->
+  <ellipse cx="245" cy="128" rx="235" ry="95" fill="url(#outerGlow)"/>
+
+  <!-- Orb -->
+  <circle cx="210" cy="120" r="96" fill="url(#orbMain)" opacity="0.18"/>
+  <circle cx="210" cy="120" r="90" fill="url(#orbMain)"/>
+  <circle cx="210" cy="120" r="92" stroke="url(#orbRim)" stroke-width="6" opacity="0.9"/>
+  <circle cx="210" cy="120" r="78" stroke="#B7FFF8" stroke-opacity="0.28" stroke-width="2"/>
+
+  <!-- Shine -->
+  <path d="M155 58C175 33 223 22 260 35C224 33 192 50 170 78C157 95 148 117 146 136C135 113 137 80 155 58Z"
+        fill="#F0FFFF" fill-opacity="0.32"/>
+  <circle cx="142" cy="82" r="4" fill="#E7FFFF" filter="url(#smallGlow)"/>
+  <circle cx="126" cy="177" r="3.5" fill="#76FFF2" filter="url(#smallGlow)"/>
+  <circle cx="305" cy="80" r="7" fill="#54FFF0" filter="url(#smallGlow)"/>
+  <circle cx="334" cy="122" r="4.5" fill="#5DFFF2" filter="url(#smallGlow)"/>
+  <circle cx="316" cy="148" r="9" fill="#58FFF1" filter="url(#smallGlow)"/>
+
+  <!-- Mother hair / back -->
+  <path d="
+    M178 50
+    C202 42 228 46 246 60
+    C260 71 267 87 265 104
+    C262 125 249 141 241 156
+    C233 170 224 182 208 189
+    C193 196 174 194 159 186
+    C143 178 132 164 130 147
+    C128 131 134 115 145 100
+    C154 88 164 76 171 65
+    C175 59 177 54 178 50Z"
+    fill="#0A6668"/>
+
+  <!-- Hair light -->
+  <path d="
+    M168 66
+    C186 48 220 46 241 58
+    C222 58 204 64 188 78
+    C173 92 161 110 153 128
+    C148 138 146 148 147 157
+    C138 146 137 124 145 104
+    C150 91 158 78 168 66Z"
+    fill="#9FFFF8" fill-opacity="0.95"/>
+
+  <!-- Face and neck -->
+  <path d="
+    M229 73
+    C222 78 219 87 216 95
+    C212 106 203 113 192 116
+    C196 120 203 123 211 123
+    C221 123 230 119 237 112
+    C244 104 247 94 245 84
+    C244 77 238 72 229 73Z"
+    fill="#F8FFFF"/>
+
+  <!-- Mother chest / body -->
+  <path d="
+    M193 116
+    C204 123 214 136 221 148
+    C227 159 231 168 238 173
+    C227 177 213 175 202 170
+    C190 165 180 156 173 146
+    C167 137 165 127 169 121
+    C174 115 183 113 193 116Z"
+    fill="#F8FFFF"/>
+
+  <!-- Baby head -->
+  <circle cx="266" cy="124" r="26" fill="#0C7A7E"/>
+
+  <!-- Baby face highlight -->
+  <path d="
+    M253 102
+    C268 100 282 106 289 118
+    C282 111 273 107 262 107
+    C257 107 255 106 253 102Z"
+    fill="#DFFFFF" fill-opacity="0.95"/>
+
+  <!-- Baby body -->
+  <path d="
+    M254 149
+    C246 156 236 162 223 166
+    C210 170 196 169 184 164
+    C193 162 202 159 210 154
+    C219 148 226 141 233 134
+    C240 127 248 123 258 123
+    C269 123 279 128 285 137
+    C280 140 274 143 268 145
+    C262 146 257 147 254 149Z"
+    fill="#F8FFFF"/>
+
+  <!-- Mother arm hugging baby -->
+  <path d="
+    M188 154
+    C205 154 222 149 237 140
+    C247 134 258 131 268 133"
+    stroke="#CFFFFB"
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+
+  <!-- Cross: moved xuống góc trái dưới -->
+  <g filter="url(#smallGlow)">
+    <rect x="118" y="146" width="42" height="12" rx="3" fill="#E9FFFF"/>
+    <rect x="133" y="131" width="12" height="42" rx="3" fill="#E9FFFF"/>
+  </g>
+
+  <!-- Orbit ring -->
+  <ellipse cx="206" cy="172" rx="136" ry="35" stroke="url(#orbitGrad)" stroke-width="8" fill="none"/>
+  <ellipse cx="206" cy="172" rx="122" ry="28" stroke="#003E44" stroke-width="10" fill="none" opacity="0.55"/>
+
+  <!-- Small orbit bubbles -->
+  <circle cx="306" cy="83" r="10" fill="url(#orbMain)" opacity="0.95"/>
+  <circle cx="330" cy="117" r="8" fill="url(#orbMain)" opacity="0.95"/>
+  <circle cx="316" cy="150" r="12" fill="url(#orbMain)" opacity="0.95"/>
+
+  <!-- Text -->
+  <text x="380" y="152"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="68"
+        font-weight="700"
+        fill="url(#textGrad)"
+        filter="url(#smallGlow)">sanphukhoa360</text>
+</svg>
