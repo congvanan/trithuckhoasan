@@ -46,11 +46,11 @@ export default function SideBarMenu() {
   return (
     <div className="hidden border-r bg-muted/40 md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-[72px] items-center border-b px-4 lg:h-[72px] lg:px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold group">
+        <div className="flex h-[92px] items-center border-b px-4 lg:h-[92px] lg:px-4">
+          <Link href="/" className="flex flex-col items-start gap-1 group w-full">
             <DivLogoCompact />
-            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">
-              Admin
+            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold tracking-wide">
+              Admin Panel
             </span>
           </Link>
         </div>

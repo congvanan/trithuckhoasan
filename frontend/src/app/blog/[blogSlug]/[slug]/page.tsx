@@ -1,4 +1,5 @@
 import { DoctorSidebar } from '@/components/page/DoctorSidebar'
+import { ImageGallery } from '@/components/blog/ImageGallery'
 import { fetchBlogPosts } from '@/lib/server/fetchBlogPosts'
 import { Calendar, ChevronRight, Home } from 'lucide-react'
 import Link from 'next/link'
@@ -180,8 +181,11 @@ async function ArticleContent({ blogSlug, slug }: { blogSlug: string; slug: stri
         dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
       />
 
-      {/* ── Bài viết liên quan ── */}
-      {related.length > 0 && (
+      {/* ── Thư viện ảnh — chỉ hiển thị ở Sự Kiện (banner-slide) ── */}
+      {isBannerSlide && <ImageGallery html={post.content ?? ''} postId={post.id} />}
+
+      {/* ── Bài viết liên quan — chỉ hiển thị ở các chuyên mục khác ── */}
+      {!isBannerSlide && related.length > 0 && (
         <div className="mt-12 border-t pt-8">
           <h3 className="text-lg font-bold text-gray-800 mb-5">Bài viết liên quan</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

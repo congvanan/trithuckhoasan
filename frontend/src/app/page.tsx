@@ -148,9 +148,9 @@ async function HeroSection() {
       <div
         className="absolute inset-y-0 left-0"
         style={{
-          width: `calc(50% + 100px)`,
+          width: `calc(50% + 60px)`,
           background: 'linear-gradient(160deg, #134e4a 0%, #0f766e 100%)',
-          clipPath: 'ellipse(85% 120% at 0% 50%)',
+          clipPath: 'ellipse(78% 130% at 0% 50%)',
           zIndex: 5,
         }}
       />

@@ -3,10 +3,16 @@ export function DivLogo({ className = '' }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/img/logo-sankhoa360.png"
+      src="/img/logo-sanphukhoa360.svg"
       alt="SanKhoa360"
       className={className}
-      style={{ height: '80px', width: 'auto', maxWidth: '400px', objectFit: 'contain', display: 'block' }}
+      style={{
+        height: '80px',
+        width: 'auto',
+        maxWidth: '320px',
+        objectFit: 'contain',
+        display: 'block',
+      }}
     />
   )
 }
@@ -16,10 +22,16 @@ export function DivLogoCompact({ className = '' }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/img/logo-sankhoa360.png"
+      src="/img/logo-sanphukhoa360.svg"
       alt="SanKhoa360"
       className={className}
-      style={{ height: '48px', width: 'auto', maxWidth: '150px', objectFit: 'contain', display: 'block' }}
+      style={{
+        height: 'auto',
+        width: '100%',
+        maxWidth: '180px',
+        objectFit: 'contain',
+        display: 'block',
+      }}
     />
   )
 }

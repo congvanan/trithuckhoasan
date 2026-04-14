@@ -241,19 +241,17 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
         ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm'
         : 'bg-background border-b'
     }`}>
-      <div className="w-full px-4 md:px-6">
-        <div className="flex h-[100px] items-center gap-3">
-          {/* Logo */}
-          <div className="flex items-center gap-3 shrink-0">
+      <div className="w-full px-4 md:px-8">
+        <div className="flex h-[92px] items-center gap-0">
+          {/* Logo — trái */}
+          <div className="flex items-center shrink-0">
             <Link href="/">
               <DivLogo />
             </Link>
-            {/* Divider logo | nav */}
-            <div className="hidden md:block h-7 w-px bg-gradient-to-b from-transparent via-[#0f766e]/40 to-transparent" />
           </div>
 
-          {/* Desktop Navigation — flex-1 để co giãn tự động */}
-          <nav className="hidden md:flex flex-1 items-center gap-0 min-w-0 overflow-hidden">
+          {/* Desktop Navigation — giữa, flex-1, justify-center */}
+          <nav className="hidden md:flex flex-1 items-center gap-0 min-w-0 overflow-hidden justify-center">
             {menuTree.map((node) => {
               const Icon = getIcon(node.item.icon, node.item.displayName)
               return node.children.length > 0 ? (
