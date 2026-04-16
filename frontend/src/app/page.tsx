@@ -6,6 +6,7 @@ import { KienThucTabs } from '@/components/sections/KienThucTabs'
 import { BannerSlider, type BannerSlide } from '@/components/sections/BannerSlider'
 import { fetchBlogPosts } from '@/lib/server/fetchBlogPosts'
 import { readLayoutConfig } from '@/lib/server/pageLayout'
+import { parseCoverImage } from '@/lib/utils/parseCoverImage'
 import { Suspense } from 'react'
 import {
   Rocket,
@@ -68,19 +69,11 @@ async function BannerSection() {
   if (!posts.length) return null
   const slides: (BannerSlide & { order: number })[] = posts
     .map((p) => {
-      const raw = p.shortDescription ?? ''
-      const parts = raw.split('|')
+      // Lấy order từ prefix số (nếu có) trước khi parse cover
+      const parts = (p.shortDescription ?? '').split('|')
       const firstIsOrder = /^\d+$/.test(parts[0] ?? '')
       const order = firstIsOrder ? parseInt(parts[0]) : 99
-      const rest = firstIsOrder ? parts.slice(1).join('|') : raw
-      const sepIdx = rest.indexOf('|')
-      const hasCover = sepIdx > 0 && (rest.startsWith('http') || rest.startsWith('/api/'))
-      const imageUrl = hasCover
-        ? rest.slice(0, sepIdx)
-        : p.coverImageMediaId
-        ? `/api/cms-kit/media/${p.coverImageMediaId}`
-        : ''
-      const caption = hasCover ? rest.slice(sepIdx + 1) : rest
+      const { imageUrl, description: caption } = parseCoverImage(p)
       return { id: p.id ?? '', imageUrl, title: p.title ?? '', caption, link: `/blog/banner-slide/${p.slug ?? ''}`, order }
     })
     .filter((s) => s.imageUrl)
@@ -114,70 +107,83 @@ async function KienThucTabsSection() {
   return <KienThucTabs sanKhoaPosts={sanKhoaPosts} phuKhoaPosts={phuKhoaPosts} soSinhPosts={soSinhPosts} />
 }
 
-function parsePostCover(p: { shortDescription?: string | null; coverImageMediaId?: string | null }) {
-  const raw = p.shortDescription ?? ''
-  const parts = raw.split('|')
-  const firstIsOrder = /^\d+$/.test(parts[0] ?? '')
-  const rest = firstIsOrder ? parts.slice(1).join('|') : raw
-  const sepIdx = rest.indexOf('|')
-  const hasCover = sepIdx > 0 && (rest.startsWith('http') || rest.startsWith('/api/'))
-  const imageUrl = hasCover ? rest.slice(0, sepIdx) : p.coverImageMediaId ? `/api/cms-kit/media/${p.coverImageMediaId}` : ''
-  const caption = hasCover ? rest.slice(sepIdx + 1) : rest
-  return { imageUrl, caption }
-}
-
 async function HeroSection() {
   let featuredPosts: Awaited<ReturnType<typeof fetchBlogPosts>> = []
   try { featuredPosts = await fetchBlogPosts('tin-noi-bat', 1) } catch {}
   const featured = featuredPosts[0] ?? null
-  const { imageUrl: featuredCover, caption: featuredDesc } = featured
-    ? parsePostCover(featured)
-    : { imageUrl: '/img/hero-medical.png', caption: '' }
-
-  const BOUNDARY = 46
+  const { imageUrl: featuredCover, description: featuredDesc } = featured
+    ? parseCoverImage(featured)
+    : { imageUrl: '/img/hero-medical.png', description: '' }
 
   return (
-    <section className="relative w-full overflow-hidden" style={{ height: 'clamp(480px, 58vw, 680px)' }}>
-      {/* Ảnh phủ toàn bộ phía sau */}
-      <div className="absolute inset-0" style={{ zIndex: 0 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={featuredCover || '/img/hero-medical.png'} alt={featured?.title ?? ''} className="w-full h-full object-cover" />
+    <section className="w-full overflow-hidden">
+      {/* ── Mobile: stack dọc ── */}
+      <div className="block md:hidden">
+        {/* Ảnh */}
+        <div className="w-full h-52 overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={featuredCover || '/img/hero-medical.png'} alt={featured?.title ?? ''} className="w-full h-full object-cover" />
+        </div>
+        {/* Text */}
+        <div className="bg-gradient-to-br from-[#134e4a] to-[#0f766e] px-5 py-6">
+          <span className="inline-flex items-center gap-1.5 text-teal-200 text-[0.65rem] font-bold px-3 py-1 rounded-full w-fit mb-3 tracking-widest uppercase border border-white/20 bg-white/10">
+            <Rocket className="w-3 h-3" /> Tin nổi bật
+          </span>
+          <h1 className="text-white font-extrabold text-xl leading-snug tracking-tight mb-3">
+            {featured?.title ?? 'Chào mừng đến Sankhoa360'}
+          </h1>
+          {featuredDesc && (
+            <p className="text-teal-100/70 text-sm leading-relaxed line-clamp-2 mb-4">{featuredDesc}</p>
+          )}
+          {featured && (
+            <Link href={`/blog/tin-noi-bat/${featured.slug}`}>
+              <span className="inline-flex items-center gap-2 font-bold text-sm px-5 py-2.5 rounded-full bg-white text-[#0f766e] shadow hover:bg-[#ccfbf1] transition-colors">
+                Đọc bài viết <ArrowRight className="w-4 h-4" />
+              </span>
+            </Link>
+          )}
+        </div>
       </div>
 
-      {/* Teal background — kéo rộng hơn để clip-path tạo cong mà không cắt text */}
-      <div
-        className="absolute inset-y-0 left-0"
-        style={{
-          width: `calc(50% + 60px)`,
-          background: 'linear-gradient(160deg, #134e4a 0%, #0f766e 100%)',
-          clipPath: 'ellipse(78% 130% at 0% 50%)',
-          zIndex: 5,
-        }}
-      />
-
-      {/* Text content — giới hạn 50% để không bị cắt */}
-      <div
-        className="absolute inset-y-0 left-0 flex flex-col justify-center px-8 md:px-12 lg:px-16 py-14"
-        style={{ width: '50%', zIndex: 10 }}
-      >
-        <span className="inline-flex items-center gap-1.5 text-[#ccfbf1] text-[0.68rem] font-bold px-3 py-1 rounded-full w-fit mb-6 tracking-widest uppercase border border-white/20 bg-white/10">
-          <Rocket className="w-3 h-3" />
-          Tin nổi bật
-        </span>
-        <h1 className="text-white font-extrabold leading-[1.1] tracking-tight mb-6" style={{ fontSize: 'clamp(1.9rem, 3.2vw, 3rem)' }}>
-          {featured?.title ?? 'Chào mừng đến Sankhoa360'}
-        </h1>
-        {featuredDesc && (
-          <p className="text-[#ccfbf1]/70 text-sm md:text-base leading-relaxed line-clamp-3 mb-8 max-w-sm">{featuredDesc}</p>
-        )}
-        {featured && (
-          <Link href={`/blog/tin-noi-bat/${featured.slug}`} className="w-fit">
-            <span className="inline-flex items-center gap-2 font-bold text-sm px-7 py-3.5 rounded-full bg-white text-[#0f766e] shadow-lg hover:bg-[#ccfbf1] hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-              Đọc bài viết
-              <ArrowRight className="w-4 h-4" />
-            </span>
-          </Link>
-        )}
+      {/* ── Desktop: layout ngang với clip-path ── */}
+      <div className="relative hidden md:block overflow-hidden" style={{ height: 'clamp(320px, 42vw, 500px)' }}>
+        {/* Ảnh nền */}
+        <div className="absolute inset-0" style={{ zIndex: 0 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={featuredCover || '/img/hero-medical.png'} alt={featured?.title ?? ''} className="w-full h-full object-cover" />
+        </div>
+        {/* Teal overlay trái */}
+        <div
+          className="absolute inset-y-0 left-0"
+          style={{
+            width: 'calc(52% + 60px)',
+            background: 'linear-gradient(160deg, #134e4a 0%, #0f766e 100%)',
+            clipPath: 'ellipse(78% 130% at 0% 50%)',
+            zIndex: 5,
+          }}
+        />
+        {/* Text */}
+        <div
+          className="absolute inset-y-0 left-0 flex flex-col justify-center px-8 lg:px-14 xl:px-16 py-10"
+          style={{ width: '50%', zIndex: 10 }}
+        >
+          <span className="inline-flex items-center gap-1.5 text-teal-200 text-[0.68rem] font-bold px-3 py-1 rounded-full w-fit mb-4 tracking-widest uppercase border border-white/20 bg-white/10">
+            <Rocket className="w-3 h-3" /> Tin nổi bật
+          </span>
+          <h1 className="text-white font-extrabold leading-[1.15] tracking-tight mb-4 text-2xl lg:text-3xl xl:text-4xl">
+            {featured?.title ?? 'Chào mừng đến Sankhoa360'}
+          </h1>
+          {featuredDesc && (
+            <p className="text-teal-100/70 text-sm lg:text-base leading-relaxed line-clamp-3 mb-6 max-w-sm">{featuredDesc}</p>
+          )}
+          {featured && (
+            <Link href={`/blog/tin-noi-bat/${featured.slug}`} className="w-fit">
+              <span className="inline-flex items-center gap-2 font-bold text-sm px-6 py-3 rounded-full bg-white text-[#0f766e] shadow-lg hover:bg-[#ccfbf1] hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
+                Đọc bài viết <ArrowRight className="w-4 h-4" />
+              </span>
+            </Link>
+          )}
+        </div>
       </div>
     </section>
   )

@@ -251,13 +251,13 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
           </div>
 
           {/* Desktop Navigation — giữa, flex-1, justify-center */}
-          <nav className="hidden md:flex flex-1 items-center gap-0 min-w-0 overflow-hidden justify-center">
+          <nav className="hidden lg:flex flex-1 items-center gap-0 min-w-0 overflow-x-auto justify-center scrollbar-hide">
             {menuTree.map((node) => {
               const Icon = getIcon(node.item.icon, node.item.displayName)
               return node.children.length > 0 ? (
                 <DropdownMenu key={node.item.id}>
                   <DropdownMenuTrigger asChild>
-                    <button className="group flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 rounded-lg outline-none whitespace-nowrap
+                    <button className="group flex items-center gap-1.5 px-2 lg:px-3 py-2 text-sm font-medium text-gray-600 rounded-lg outline-none whitespace-nowrap
                       transition-all duration-200
                       hover:text-[#0f766e] hover:bg-[#0f766e]/8
                       data-[state=open]:text-[#0f766e] data-[state=open]:bg-[#0f766e]/10">
@@ -293,7 +293,7 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
                 <Link
                   key={node.item.id}
                   href={node.item.url ?? '#'}
-                  className="group flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 rounded-lg whitespace-nowrap
+                  className="group flex items-center gap-1.5 px-2 lg:px-3 py-2 text-sm font-medium text-gray-600 rounded-lg whitespace-nowrap
                     transition-all duration-200 hover:text-[#0f766e] hover:bg-[#0f766e]/8"
                 >
                   <span className="flex items-center justify-center w-6 h-6 rounded-md
@@ -310,7 +310,7 @@ export default function TopNavBar({ initialMenuItems = [], searchKeywords }: Top
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+              <Button variant="outline" size="icon" className="shrink-0 lg:hidden">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
