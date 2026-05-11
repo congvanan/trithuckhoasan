@@ -27,3 +27,13 @@ Thumbs.db
 .idea/
 *.suo
 *.user
+
+# Build cache / temp
+.tmp/
+
+# DB backups (created by maintenance scripts)
+backups/
+
+# Backend logs (cả Logs/ ở root và trong từng project)
+backend/aspnet-core/Logs/
+backend/aspnet-core/**/Logs/

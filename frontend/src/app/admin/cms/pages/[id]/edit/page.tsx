@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import Error from '@/components/ui/Error'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+
 import { useToast } from '@/components/ui/use-toast'
 import { QueryNames } from '@/lib/hooks/QueryConstants'
 import { useGrantedPolicies } from '@/lib/hooks/useGrantedPolicies'
@@ -169,7 +169,7 @@ export default function EditPage() {
         const draftData = JSON.parse(savedDraft)
         Object.entries(draftData).forEach(([key, value]) => {
           if (key in draftData && value !== undefined) {
-            setValue(key as keyof UpdatePageInputDto, value as any)
+            setValue(key as keyof UpdatePageInputDto, value as UpdatePageInputDto[keyof UpdatePageInputDto])
           }
         })
         toast({
@@ -203,7 +203,6 @@ export default function EditPage() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {
         e.preventDefault()
-        e.returnValue = ''
       }
     }
 
@@ -244,9 +243,9 @@ export default function EditPage() {
       console.error('Page update error:', err)
 
       if (err && typeof err === 'object' && 'error' in err) {
-        const errorData = err as any
+        const errorData = err as { error?: { details?: Record<string, unknown>; message?: string } }
         if (errorData.error?.details) {
-          setFormErrors(errorData.error.details)
+          setFormErrors(errorData.error.details as Record<string, string[]>)
           const errorMessages = Object.entries(errorData.error.details)
             .map(
               ([field, messages]) =>

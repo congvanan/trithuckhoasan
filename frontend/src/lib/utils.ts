@@ -101,6 +101,21 @@ export enum Permissions {
   // Template
   ABP_TEMPLATE_TENANT = 'AbpTemplate.Tenant',
   ABP_TEMPLATE_TENANT_ADD_HOST = 'AbpTemplate.Tenant.AddHost',
+
+  // Mydoctor AI / RAG
+  AI = 'Mydoctor.Ai',
+  AI_SOURCES = 'Mydoctor.Ai.Sources',
+  AI_SOURCES_CREATE = 'Mydoctor.Ai.Sources.Create',
+  AI_SOURCES_EDIT = 'Mydoctor.Ai.Sources.Edit',
+  AI_SOURCES_DELETE = 'Mydoctor.Ai.Sources.Delete',
+  AI_SOURCES_REINDEX = 'Mydoctor.Ai.Sources.Reindex',
+  AI_SETTINGS = 'Mydoctor.Ai.Settings',
+  AI_SETTINGS_EDIT = 'Mydoctor.Ai.Settings.Edit',
+  AI_LOGS = 'Mydoctor.Ai.Logs',
+  AI_LOGS_EXPORT = 'Mydoctor.Ai.Logs.Export',
+  AI_LOGS_DELETE = 'Mydoctor.Ai.Logs.Delete',
+  AI_JOBS = 'Mydoctor.Ai.Jobs',
+  AI_JOBS_CANCEL = 'Mydoctor.Ai.Jobs.Cancel',
 }
 
 /**

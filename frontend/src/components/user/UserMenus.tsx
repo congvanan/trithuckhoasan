@@ -25,7 +25,7 @@ export const UserMenus = ({}: UserMenusProps) => {
           className="mt-2 w-full sm:mt-0 sm:w-1/2"
           size="sm"
           onClick={() =>
-            (location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/Account/Register`)
+            (location.href = `${process.env.NEXT_PUBLIC_API_URL}/Account/Register`)
           }
         >
           Register

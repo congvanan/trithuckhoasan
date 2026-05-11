@@ -1,4 +1,4 @@
-# MyAbpApp
+# Mydoctor
 
 ## About this solution
 
@@ -46,13 +46,33 @@ abp install-libs
 
 #### Create the Database
 
-Run `MyAbpApp.DbMigrator` to create the initial database. This should be done in the first run. It is also needed if a new database migration is added to the solution later.
+Run `Mydoctor.DbMigrator` to create the initial database. This should be done in the first run. It is also needed if a new database migration is added to the solution later.
+
+### Inspect AI vector data
+
+After running AI source reindex/ingestion, you can inspect what was written into PostgreSQL with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Test-AiVectorFlow.ps1
+```
+
+Filter by source name:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Test-AiVectorFlow.ps1 -SourceName "manual"
+```
+
+Filter by source id:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Test-AiVectorFlow.ps1 -SourceId "00000000-0000-0000-0000-000000000000"
+```
 
 ### Solution structure
 
 This is a layered monolith application that consists of the following applications:
 
-* `MyAbpApp.DbMigrator`: A console application which applies the migrations and also seeds the initial data. It is useful on development as well as on production environment.
+* `Mydoctor.DbMigrator`: A console application which applies the migrations and also seeds the initial data. It is useful on development as well as on production environment.
 
 ### Deploying the application
 

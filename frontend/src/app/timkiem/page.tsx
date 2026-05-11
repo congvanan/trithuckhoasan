@@ -1,4 +1,7 @@
 import { BlogPostCommonDto } from '@/client'
+import { BLOG_LABELS, getBlogLabel } from '@/lib/constants/blogs'
+import { formatDate } from '@/lib/utils/formatDate'
+import { parseCoverImage } from '@/lib/utils/parseCoverImage'
 import { Calendar, ChevronRight, FolderOpen, Home } from 'lucide-react'
 import Link from 'next/link'
 import { SearchFilters } from './SearchFilters'
@@ -6,26 +9,11 @@ import { SearchFilters } from './SearchFilters'
 const PAGE_SIZE = 10
 const MAX_FETCH = 200
 
-const BLOG_SLUGS: Record<string, string> = {
-  'tin-chuyen-nghanh': 'Thông tin chuyên ngành',
-  'tin-quoc-te': 'Tin quốc tế',
-}
+// Tìm kiếm trong tất cả blog slug được định nghĩa trong BLOG_LABELS
+const SEARCH_BLOG_SLUGS = Object.keys(BLOG_LABELS)
 
 interface PostWithSlug extends BlogPostCommonDto {
   blogSlug: string
-}
-
-function parseCover(raw?: string | null): { cover: string | null; desc: string } {
-  if (!raw) return { cover: null, desc: '' }
-  const idx = raw.indexOf('|')
-  if (idx > 0 && raw.startsWith('http')) return { cover: raw.slice(0, idx), desc: raw.slice(idx + 1) }
-  return { cover: null, desc: raw }
-}
-
-function formatDate(d?: string | null) {
-  if (!d) return ''
-  const dt = new Date(d)
-  return `${String(dt.getDate()).padStart(2, '0')}/${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`
 }
 
 async function fetchAllPosts(blogSlug: string): Promise<PostWithSlug[]> {
@@ -83,9 +71,9 @@ export default async function TimKiemPage({
   // Fetch from relevant blogs
   let allPosts: PostWithSlug[] = []
   if (category === 'all') {
-    const results = await Promise.all(Object.keys(BLOG_SLUGS).map(slug => fetchAllPosts(slug)))
+    const results = await Promise.all(SEARCH_BLOG_SLUGS.map(slug => fetchAllPosts(slug)))
     allPosts = results.flat()
-  } else if (BLOG_SLUGS[category]) {
+  } else if (BLOG_LABELS[category]) {
     allPosts = await fetchAllPosts(category)
   }
 
@@ -97,13 +85,13 @@ export default async function TimKiemPage({
   if (q) {
     const lower = q.toLowerCase()
     filtered = filtered.filter(post => {
-      const { desc } = parseCover(post.shortDescription)
-      if (searchIn === 'title') return (post.title ?? '').toLowerCase().includes(lower)
-      if (searchIn === 'desc') return desc.toLowerCase().includes(lower)
-      return (
-        (post.title ?? '').toLowerCase().includes(lower) ||
-        desc.toLowerCase().includes(lower)
-      )
+      const { description: desc } = parseCoverImage(post)
+      const content = (post.content ?? '').toLowerCase()
+      const title = (post.title ?? '').toLowerCase()
+      const descLower = desc.toLowerCase()
+      if (searchIn === 'title') return title.includes(lower)
+      if (searchIn === 'desc') return descLower.includes(lower) || content.includes(lower)
+      return title.includes(lower) || descLower.includes(lower) || content.includes(lower)
     })
   }
 
@@ -193,9 +181,9 @@ export default async function TimKiemPage({
               <>
                 <div className="space-y-4">
                   {pagePosts.map((post) => {
-                    const { cover, desc } = parseCover(post.shortDescription)
-                    const imgUrl = cover ?? (post.coverImageMediaId ? `/api/cms-kit/media/${post.coverImageMediaId}` : null)
-                    const categoryLabel = BLOG_SLUGS[post.blogSlug] ?? post.blogSlug
+                    const { imageUrl, description: desc } = parseCoverImage(post)
+                    const imgUrl = imageUrl || null
+                    const categoryLabel = getBlogLabel(post.blogSlug)
                     return (
                       <div key={post.id} className="bg-white rounded border hover:shadow-sm transition-shadow">
                         <div className="flex gap-4 p-4">
@@ -236,12 +224,28 @@ export default async function TimKiemPage({
                               </span>
                             </div>
 
-                            {/* Description */}
-                            {desc && (
-                              <p className="text-sm text-gray-500 line-clamp-2">
-                                <HighlightedText text={desc} keyword={searchIn === 'title' ? '' : q} />
-                              </p>
-                            )}
+                            {/* Description / Content snippet */}
+                            {(() => {
+                              const keyword = searchIn === 'title' ? '' : q
+                              // Ưu tiên desc; nếu keyword không có trong desc thì lấy snippet từ content
+                              const contentText = post.content ? post.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : ''
+                              const showContent = keyword && !desc.toLowerCase().includes(keyword.toLowerCase()) && contentText.toLowerCase().includes(keyword.toLowerCase())
+                              const displayText = showContent ? contentText : desc
+                              if (!displayText) return null
+                              // Nếu lấy từ content, cắt đoạn quanh keyword
+                              let snippet = displayText
+                              if (showContent && keyword) {
+                                const idx = displayText.toLowerCase().indexOf(keyword.toLowerCase())
+                                const start = Math.max(0, idx - 60)
+                                const end = Math.min(displayText.length, idx + keyword.length + 120)
+                                snippet = (start > 0 ? '...' : '') + displayText.slice(start, end) + (end < displayText.length ? '...' : '')
+                              }
+                              return (
+                                <p className="text-sm text-gray-500 line-clamp-2">
+                                  <HighlightedText text={snippet} keyword={keyword} />
+                                </p>
+                              )
+                            })()}
                           </div>
                         </div>
                       </div>

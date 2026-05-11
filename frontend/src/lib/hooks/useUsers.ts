@@ -36,7 +36,8 @@ export const useUsers = (
           Sorting: sorting,
         },
       })
-      return response.data
+      if (response.error) throw response.error
+      return response.data ?? { items: [], totalCount: 0 }
     },
     staleTime: 5 * 60_000,
   })

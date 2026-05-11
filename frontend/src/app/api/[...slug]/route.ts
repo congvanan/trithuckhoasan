@@ -1,7 +1,14 @@
 import { getSession } from '@/lib/actions'
+import { isTokenExpired } from '@/lib/auth'
 import { NextRequest, NextResponse } from 'next/server'
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+export const maxDuration = 900
+
+const DEFAULT_PROXY_TIMEOUT_MS = 30_000
+const PROVIDER_TEST_PROXY_TIMEOUT_MS = 120_000
+const LONG_RUNNING_PROXY_TIMEOUT_MS = 15 * 60_000
 
 interface ApiError extends Error {
   status?: number
@@ -30,15 +37,28 @@ const sessionCacheMap = new Map<string, SessionCache>()
 const getCachedSession = async (cookieKey: string) => {
   const now = Date.now()
   const cached = sessionCacheMap.get(cookieKey)
-  if (cached && cached.expires > now) {
+  // Chỉ dùng cache nếu JWT vẫn còn hạn — tránh gửi token stale lên backend gây 401.
+  if (cached && cached.expires > now && !isTokenExpired(cached.token)) {
     return { access_token: cached.token, tenantId: cached.tenantId }
   }
+  if (cached) sessionCacheMap.delete(cookieKey)
   const session = await getSession()
   if (session.access_token) {
+    // Cache tối đa 60s hoặc tới khi JWT hết hạn (chọn cái nhỏ hơn).
+    const jwtExpMs = (() => {
+      try {
+        const payload = JSON.parse(
+          Buffer.from(session.access_token!.split('.')[1], 'base64').toString('utf-8')
+        )
+        return typeof payload?.exp === 'number' ? payload.exp * 1000 : now + 60_000
+      } catch {
+        return now + 60_000
+      }
+    })()
     sessionCacheMap.set(cookieKey, {
       token: session.access_token,
       tenantId: session.tenantId,
-      expires: now + 5 * 60_000, // 5 phút
+      expires: Math.min(now + 60_000, jwtExpMs - 5_000),
     })
     // Dọn cache cũ để tránh memory leak
     if (sessionCacheMap.size > 100) {
@@ -50,7 +70,7 @@ const getCachedSession = async (cookieKey: string) => {
   return session
 }
 
-const getHeaders = async (request: NextRequest, path: string): Promise<HeadersInit> => {
+const getHeaders = async (request: NextRequest, path: string): Promise<Headers> => {
   const headers = new Headers()
   // Dùng cookie header làm key để định danh user
   const cookieKey = request.headers.get('cookie')?.slice(0, 64) ?? 'anon'
@@ -123,8 +143,18 @@ const makeApiRequest = async (
       cache: 'no-store',
     }
 
+    const isProviderTest = path.includes('/ai-setting/test-provider')
+    const isLongRunning = path.includes('/reindex') || path.includes('/ingest') || path.includes('/trigger')
+    const proxyTimeoutMs = isLongRunning
+      ? LONG_RUNNING_PROXY_TIMEOUT_MS
+      : isProviderTest
+        ? PROVIDER_TEST_PROXY_TIMEOUT_MS
+        : DEFAULT_PROXY_TIMEOUT_MS
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+    const timeoutId = setTimeout(
+      () => controller.abort(new Error(`API proxy timeout after ${Math.round(proxyTimeoutMs / 1000)}s`)),
+      proxyTimeoutMs
+    )
 
     let response: Response
     try {
@@ -144,6 +174,18 @@ const makeApiRequest = async (
         duration: `${duration}ms`,
         timestamp: new Date().toISOString(),
       })
+      if (controller.signal.aborted) {
+        throw Object.assign(
+          new Error(
+            isLongRunning
+              ? `Reindex request exceeded the ${Math.round(proxyTimeoutMs / 60_000)} minute proxy timeout. Try reducing the source size or run the job from the backend.`
+              : isProviderTest
+                ? `Provider test exceeded the ${Math.round(proxyTimeoutMs / 1000)} second proxy timeout. Check API key, model quota, and backend network access.`
+              : `API request exceeded the ${Math.round(proxyTimeoutMs / 1000)} second proxy timeout.`
+          ),
+          { status: 504 }
+        )
+      }
       throw fetchError
     }
 
@@ -189,17 +231,26 @@ const makeApiRequest = async (
 
     const responseContentType = response.headers.get('Content-Type') ?? ''
 
-    // Forward binary responses (ảnh, file) — đọc ArrayBuffer để tránh lỗi stream
-    if (!responseContentType.includes('application/json') && !responseContentType.includes('text/')) {
+    // Forward binary + download (CSV/xlsx/pdf/ảnh) — đọc ArrayBuffer để tránh lỗi stream
+    const contentDisposition = response.headers.get('Content-Disposition') ?? ''
+    const isDownload = contentDisposition.toLowerCase().includes('attachment')
+    const isBinaryLike =
+      !responseContentType.includes('application/json') &&
+      !responseContentType.startsWith('text/html') &&
+      !responseContentType.startsWith('text/plain')
+    if (isDownload || isBinaryLike) {
       const buffer = await response.arrayBuffer()
-      return new NextResponse(buffer, {
-        status: response.status,
-        headers: {
-          'Content-Type': responseContentType || 'application/octet-stream',
-          // Cache ảnh 1 giờ, sau đó revalidate ngầm — tránh stale lâu khi đổi mediaId
-          'Cache-Control': 'public, max-age=3600, stale-while-revalidate=60',
-        },
-      })
+      const headers: Record<string, string> = {
+        'Content-Type': responseContentType || 'application/octet-stream',
+      }
+      if (contentDisposition) headers['Content-Disposition'] = contentDisposition
+      // Chỉ cache image, không cache file download
+      if (responseContentType.startsWith('image/')) {
+        headers['Cache-Control'] = 'public, max-age=3600, stale-while-revalidate=60'
+      } else {
+        headers['Cache-Control'] = 'no-store'
+      }
+      return new NextResponse(buffer, { status: response.status, headers })
     }
 
     const responseHeaders = new Headers(response.headers)

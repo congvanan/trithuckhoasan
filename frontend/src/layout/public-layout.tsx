@@ -1,6 +1,7 @@
 import { NavbarServer } from '@/components/navbar/NavbarServer'
 import { NavbarSkeleton } from '@/components/navbar/NavbarSkeleton'
 import { SiteFooter } from '@/components/SiteFooter'
+import { ChatWidget } from '@/components/chat/ChatWidget'
 import { Suspense } from 'react'
 
 export async function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -9,6 +10,7 @@ export async function PublicLayout({ children }: { children: React.ReactNode }) 
       <Suspense fallback={<NavbarSkeleton />}><NavbarServer /></Suspense>
       <main className="flex-1">{children}</main>
       <SiteFooter />
+      <ChatWidget />
     </div>
   )
 }

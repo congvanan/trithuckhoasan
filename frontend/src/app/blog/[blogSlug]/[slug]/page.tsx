@@ -1,22 +1,14 @@
 import { DoctorSidebar } from '@/components/page/DoctorSidebar'
 import { ImageGallery } from '@/components/blog/ImageGallery'
+import { ShareButtons } from '@/components/blog/ShareButtons'
 import { fetchBlogPosts } from '@/lib/server/fetchBlogPosts'
+import { BLOG_SLUGS, getBlogLabel } from '@/lib/constants/blogs'
+import { formatDate } from '@/lib/utils/formatDate'
+import { parseCoverImage } from '@/lib/utils/parseCoverImage'
 import { Calendar, ChevronRight, Home } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-
-const BLOG_SLUGS = ['tin-chuyen-nghanh', 'tin-quoc-te', 'banner-slide', 'tin-noi-bat', 'san-khoa', 'phu-khoa', 'so-sinh']
-
-const BLOG_LABELS: Record<string, string> = {
-  'tin-chuyen-nghanh': 'Tin chuyên ngành',
-  'tin-quoc-te': 'Tin quốc tế',
-  'san-khoa': 'Sản khoa',
-  'phu-khoa': 'Phụ khoa',
-  'so-sinh': 'Sơ sinh',
-  'tin-noi-bat': 'Tin nổi bật',
-  'banner-slide': 'Sự Kiện',
-}
 
 export async function generateStaticParams() {
   const results = await Promise.all(
@@ -29,11 +21,6 @@ export async function generateStaticParams() {
 }
 
 export const revalidate = 600 // 10 phút
-
-function formatDate(d?: string | null) {
-  if (!d) return ''
-  return new Date(d).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 async function fetchPost(blogSlug: string, slug: string) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL
@@ -82,17 +69,7 @@ function ArticleSkeleton() {
 }
 
 // Component riêng để fetch + render — cho phép Suspense streaming
-function parseCoverUrl(p: { shortDescription?: string | null; coverImageMediaId?: string | null }): string {
-  const raw = p.shortDescription ?? ''
-  const parts = raw.split('|')
-  const firstIsOrder = /^\d+$/.test(parts[0] ?? '')
-  const rest = firstIsOrder ? parts.slice(1).join('|') : raw
-  const idx = rest.indexOf('|')
-  if (idx > 0 && (rest.startsWith('http') || rest.startsWith('/api/'))) return rest.slice(0, idx)
-  return p.coverImageMediaId ? `/api/cms-kit/media/${p.coverImageMediaId}` : ''
-}
-
-async function ArticleContent({ blogSlug, slug }: { blogSlug: string; slug: string }) {
+async function ArticleContent({ blogSlug, slug, appUrl }: { blogSlug: string; slug: string; appUrl: string }) {
   const [post, relatedRaw] = await Promise.all([
     fetchPost(blogSlug, slug),
     fetchBlogPosts(blogSlug, 7).catch(() => []),
@@ -102,18 +79,8 @@ async function ArticleContent({ blogSlug, slug }: { blogSlug: string; slug: stri
   // Lấy tối đa 6 bài liên quan, bỏ bài hiện tại
   const related = relatedRaw.filter((p) => p.slug !== slug).slice(0, 6)
 
-  const rawDesc = post.shortDescription ?? ''
-  const descParts = rawDesc.split('|')
-  const firstIsOrder = /^\d+$/.test(descParts[0] ?? '')
-  const descRest = firstIsOrder ? descParts.slice(1).join('|') : rawDesc
-  const descSepIdx = descRest.indexOf('|')
-  const hasCoverInDesc = descSepIdx > 0 && (descRest.startsWith('http') || descRest.startsWith('/api/'))
-  const descText = hasCoverInDesc ? descRest.slice(descSepIdx + 1) : descRest
-  const coverUrl = hasCoverInDesc
-    ? descRest.slice(0, descSepIdx)
-    : post.coverImageMediaId
-    ? `/api/cms-kit/media/${post.coverImageMediaId}`
-    : ''
+  const { imageUrl: coverUrl, description: descText } = parseCoverImage(post)
+  const shareUrl = `${appUrl}/blog/${blogSlug}/${slug}`
 
   const isBannerSlide = blogSlug === 'banner-slide'
 
@@ -121,37 +88,14 @@ async function ArticleContent({ blogSlug, slug }: { blogSlug: string; slug: stri
     <article className="flex-1 min-w-0">
 
       {isBannerSlide ? (
-        /* ── Hero card (chỉ dành cho Sự Kiện / banner-slide) ── */
-        <div className="rounded-2xl overflow-hidden shadow-lg mb-8">
-          <div
-            className="px-6 md:px-8 pt-6 pb-5 flex flex-col gap-3"
-            style={{ background: 'linear-gradient(160deg, #134e4a 0%, #0f766e 100%)' }}
-          >
-            <h1
-              className="text-white font-extrabold leading-tight tracking-tight"
-              style={{ fontSize: 'clamp(1.2rem, 2.4vw, 1.8rem)' }}
-            >
-              {post.title}
-            </h1>
-            {descText && (
-              <p className="text-[#ccfbf1]/85 text-sm leading-relaxed line-clamp-3">{descText}</p>
-            )}
-            <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center gap-2 text-[#ccfbf1]/60 text-xs">
-                <Calendar className="w-3.5 h-3.5" />
-                <span>{formatDate(post.creationTime)}</span>
-                {post.author?.userName && <><span>·</span><span>{post.author.userName}</span></>}
-              </div>
-              <span className="text-[#ccfbf1] text-xs font-semibold flex items-center gap-1">
-                Chi tiết bài viết <span className="text-base leading-none">›</span>
-              </span>
-            </div>
-          </div>
+        /* ── Sự Kiện: chỉ hiển thị ảnh bìa + thư viện ảnh, không có text bài viết ── */
+        <>
           {coverUrl && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={coverUrl} alt={post.title} className="w-full object-cover" style={{ maxHeight: '420px' }} />
+            <img src={coverUrl} alt={post.title} className="w-full object-cover rounded-2xl shadow-lg mb-6" style={{ maxHeight: '480px' }} />
           )}
-        </div>
+          <ImageGallery html={post.content ?? ''} postId={post.id} />
+        </>
       ) : (
         /* ── Layout thông thường (các chuyên mục khác) ── */
         <>
@@ -172,17 +116,24 @@ async function ArticleContent({ blogSlug, slug }: { blogSlug: string; slug: stri
               {descText}
             </p>
           )}
+          {/* ── Nội dung bài viết ── */}
+          <div
+            className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-a:text-teal-700"
+            dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
+          />
         </>
       )}
 
-      {/* ── Nội dung bài viết ── */}
-      <div
-        className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-a:text-teal-700"
-        dangerouslySetInnerHTML={{ __html: post.content ?? '' }}
-      />
-
-      {/* ── Thư viện ảnh — chỉ hiển thị ở Sự Kiện (banner-slide) ── */}
-      {isBannerSlide && <ImageGallery html={post.content ?? ''} postId={post.id} />}
+      {/* ── Share bottom ── */}
+      {!isBannerSlide && (
+        <div className="mt-8 pt-6 border-t flex items-center justify-between flex-wrap gap-3">
+          <Link href={`/blog/${blogSlug}`}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-teal-600 transition-colors">
+            ← Quay lại
+          </Link>
+          <ShareButtons url={shareUrl} title={post.title ?? ''} />
+        </div>
+      )}
 
       {/* ── Bài viết liên quan — chỉ hiển thị ở các chuyên mục khác ── */}
       {!isBannerSlide && related.length > 0 && (
@@ -190,7 +141,7 @@ async function ArticleContent({ blogSlug, slug }: { blogSlug: string; slug: stri
           <h3 className="text-lg font-bold text-gray-800 mb-5">Bài viết liên quan</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {related.map((p) => {
-              const thumb = parseCoverUrl(p)
+              const { imageUrl: thumb } = parseCoverImage(p)
               return (
                 <Link
                   key={p.id}
@@ -235,7 +186,8 @@ export default async function BlogPostDetailPage({
   params: Promise<{ blogSlug: string; slug: string }>
 }) {
   const { blogSlug, slug } = await params
-  const blogLabel = BLOG_LABELS[blogSlug] ?? blogSlug
+  const blogLabel = getBlogLabel(blogSlug)
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-6">
@@ -254,7 +206,7 @@ export default async function BlogPostDetailPage({
 
       <div className={blogSlug === 'banner-slide' ? '' : 'flex gap-8 items-start'}>
         <Suspense fallback={<ArticleSkeleton />}>
-          <ArticleContent blogSlug={blogSlug} slug={slug} />
+          <ArticleContent blogSlug={blogSlug} slug={slug} appUrl={appUrl} />
         </Suspense>
 
         {blogSlug !== 'banner-slide' && (

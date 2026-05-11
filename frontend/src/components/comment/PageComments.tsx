@@ -72,8 +72,7 @@ export const PageComments = ({ pageId, pageTitle }: PageCommentsProps) => {
     )
   }
 
-  // Handle both possible response formats - cast to any to work around type issues
-  const comments = (commentsData as any)?.items || (Array.isArray(commentsData) ? commentsData : [])
+  const comments: CommentWithDetailsDto[] = commentsData?.items ?? []
 
   return (
     <Card>

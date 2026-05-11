@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Star, Plus, Trash2, Globe, Eye, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -47,7 +47,7 @@ function statusBadge(status?: number) {
 
 export default function FeaturedPostPage() {
   const { toast } = useToast()
-  const queryClient = useQueryClient()
+
 
   const [showForm, setShowForm] = useState(false)
   const [title, setTitle] = useState('')
@@ -135,7 +135,9 @@ export default function FeaturedPostPage() {
     setSaving(false)
     console.log('[featured] create response:', JSON.stringify(res), 'status:', res.response?.status, 'data:', res.data, 'error:', JSON.stringify(res.error))
     if (res.error) {
-      const errDetail = (res.error as any)?.error?.message ?? (res.error as any)?.message ?? JSON.stringify(res.error)
+      const errDetail = (res.error as { error?: { message?: string }; message?: string })?.error?.message
+        ?? (res.error as { message?: string })?.message
+        ?? JSON.stringify(res.error)
       toast({ title: 'Lỗi tạo bài', description: errDetail, variant: 'destructive' })
     } else {
       toast({ title: 'Đã tạo bài nổi bật', description: title })

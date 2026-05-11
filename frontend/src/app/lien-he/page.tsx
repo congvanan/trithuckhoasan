@@ -253,17 +253,17 @@ export default function LienHePage() {
                     </div>
                     {/* Info */}
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm leading-tight">{doc.name}</p>
-                      <p className="text-xs text-[#0f766e] font-medium mt-0.5">{doc.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">{doc.specialty}</p>
+                      <p className="font-semibold text-base leading-tight">{doc.name}</p>
+                      <p className="text-sm text-[#0f766e] font-medium mt-0.5">{doc.title}</p>
+                      <p className="text-sm text-muted-foreground mt-0.5 truncate">{doc.specialty}</p>
                       <div className="flex flex-col gap-0.5 mt-2">
                         <a href={`tel:${doc.phone.replace(/\s/g, '')}`}
-                          className="text-xs text-gray-500 hover:text-[#0f766e] flex items-center gap-1.5 transition-colors">
-                          <Phone className="w-3 h-3" />{doc.phone}
+                          className="text-sm text-gray-500 hover:text-[#0f766e] flex items-center gap-1.5 transition-colors">
+                          <Phone className="w-3.5 h-3.5" />{doc.phone}
                         </a>
                         <a href={`mailto:${doc.email}`}
-                          className="text-xs text-gray-500 hover:text-[#0f766e] flex items-center gap-1.5 transition-colors truncate">
-                          <Mail className="w-3 h-3" />{doc.email}
+                          className="text-sm text-gray-500 hover:text-[#0f766e] flex items-center gap-1.5 transition-colors truncate">
+                          <Mail className="w-3.5 h-3.5" />{doc.email}
                         </a>
                       </div>
                     </div>

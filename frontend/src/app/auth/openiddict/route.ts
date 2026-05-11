@@ -24,17 +24,29 @@ import * as client from 'openid-client'
  */
 export async function GET(request: NextRequest) {
   const session = await getSession()
-  const openIdClientConfig = await getClientConfig()
+  let openIdClientConfig: Awaited<ReturnType<typeof getClientConfig>>
+  try {
+    openIdClientConfig = await getClientConfig()
+  } catch (e) {
+    console.error('[auth/openiddict] Discovery failed:', e)
+    return new Response(`Auth discovery failed: ${(e as Error).message}`, { status: 500 })
+  }
   const headerList = await headers()
   const host = headerList.get('x-forwarded-host') || headerList.get('host') || 'localhost'
-  const protocol = headerList.get('x-forwarded-proto') || 'https'
+  const protocol = headerList.get('x-forwarded-proto') || (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https')
   const currentUrl = new URL(
     `${protocol}://${host}${request.nextUrl.pathname}${request.nextUrl.search}`
   )
-  const tokenSet = await client.authorizationCodeGrant(openIdClientConfig, currentUrl, {
-    pkceCodeVerifier: session.code_verifier,
-    expectedState: session.state,
-  })
+  let tokenSet: Awaited<ReturnType<typeof client.authorizationCodeGrant>>
+  try {
+    tokenSet = await client.authorizationCodeGrant(openIdClientConfig, currentUrl, {
+      pkceCodeVerifier: session.code_verifier,
+      expectedState: session.state,
+    })
+  } catch (e) {
+    console.error('[auth/openiddict] Token exchange failed:', e)
+    return new Response(`Token exchange failed: ${(e as Error).message}`, { status: 500 })
+  }
   const { access_token, refresh_token } = tokenSet
   session.isLoggedIn = true
   session.access_token = access_token

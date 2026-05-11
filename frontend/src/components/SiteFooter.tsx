@@ -1,7 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
-import { FooterContactForm } from '@/components/FooterContactForm'
-import { MapPin, Phone, Mail, Globe, Facebook } from 'lucide-react'
+import { MapPin, Phone, Mail, Globe, Facebook, Stethoscope, ChevronRight } from 'lucide-react'
+import { DOCTORS } from '@/lib/data/doctors'
+import { getMediaUrl } from '@/lib/utils/media'
 // Facebook & Mail above are used in the org info row, not SOCIAL_LINKS
 
 // ✏️ Cập nhật thông tin tại đây
@@ -51,6 +52,68 @@ function TikTokIcon() {
     <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
       <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
     </svg>
+  )
+}
+
+function FooterDoctorCard() {
+  const doctor = DOCTORS[0]
+  if (!doctor) return null
+  const mediaUrl = getMediaUrl(doctor.mediaId)
+  const initials = doctor.name.replace(/^(BS|BSCKI|BSCKII|ThS|PGS|GS)\.?\s*/i, '').trim().split(' ').slice(-2).map((w: string) => w[0] ?? '').join('').toUpperCase()
+
+  return (
+    <div className="space-y-3">
+      {/* Hàng ngang: avatar + info */}
+      <div className="flex items-center gap-3">
+        {/* Avatar nhỏ */}
+        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-teal-300/50 shrink-0 bg-teal-800">
+          {mediaUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={mediaUrl} alt={doctor.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-white font-bold text-lg">{initials}</div>
+          )}
+        </div>
+        {/* Info */}
+        <div className="min-w-0">
+          <p className="text-white font-semibold text-sm leading-tight truncate">
+            {doctor.title} {doctor.name}
+          </p>
+          <p className="text-teal-200 text-xs mt-0.5 truncate">{doctor.specialty}</p>
+          <div className="flex items-center gap-1 text-white/60 text-xs mt-0.5">
+            <MapPin className="w-3 h-3 text-teal-300 shrink-0" />
+            <span className="truncate">{doctor.hospital}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-white/10" />
+
+      {/* Chức vụ */}
+      <p className="text-white/60 text-xs leading-relaxed">{doctor.currentPosition}</p>
+
+      {/* Nút gọi */}
+      {doctor.phone && (
+        <a
+          href={`tel:${doctor.phone.replace(/\s/g, '')}`}
+          className="flex items-center gap-2 text-sm font-semibold text-white/90
+            hover:text-white transition-colors group"
+        >
+          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/40 group-hover:bg-orange-500/40 transition-colors">
+            <Phone className="w-3.5 h-3.5 text-orange-300" />
+          </span>
+          <span>{doctor.phone}</span>
+        </a>
+      )}
+
+      <Link
+        href={`/bac-si/${doctor.slug}`}
+        className="inline-flex items-center gap-1 text-teal-300 hover:text-white text-xs font-medium transition-colors"
+      >
+        Xem hồ sơ đầy đủ <ChevronRight className="w-3.5 h-3.5" />
+      </Link>
+    </div>
   )
 }
 
@@ -133,12 +196,12 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {/* ── Col 3: Mini contact form ─────────────────────────── */}
+          {/* ── Col 3: Doctor contact card ───────────────────────── */}
           <div>
             <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4 pb-2 border-b border-white/20">
-              Liên hệ
+              Bác sĩ tư vấn
             </h3>
-            <FooterContactForm />
+            <FooterDoctorCard />
           </div>
 
         </div>

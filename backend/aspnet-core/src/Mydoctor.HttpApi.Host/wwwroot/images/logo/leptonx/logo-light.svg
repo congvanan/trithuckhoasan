@@ -1,0 +1,15 @@
+<svg width="180" height="44" viewBox="0 0 180 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1CE5D8"/>
+      <stop offset="1" stop-color="#006B72"/>
+    </linearGradient>
+  </defs>
+  <!-- Circle background -->
+  <circle cx="22" cy="22" r="22" fill="url(#iconGrad)"/>
+  <!-- Medical Cross -->
+  <rect x="18" y="9" width="8" height="26" rx="2.5" fill="white"/>
+  <rect x="9" y="18" width="26" height="8" rx="2.5" fill="white"/>
+  <!-- Text -->
+  <text x="54" y="29" font-family="'Segoe UI', Arial, sans-serif" font-weight="700" font-size="19" fill="#0A3D40" letter-spacing="0.3">Mydoctor</text>
+</svg>

@@ -76,7 +76,20 @@ export const UserList = () => {
   })
 
   if (isLoading) return <Loader />
-  if (isError) return <Error />
+  if (isError) {
+    const err = error as { message?: string; status?: number } | null
+    return (
+      <div className="p-6 space-y-3">
+        <div className="text-red-600 font-medium">Không tải được danh sách người dùng</div>
+        <pre className="text-xs bg-red-50 border border-red-200 rounded p-3 whitespace-pre-wrap break-all">
+          {err?.status ? `HTTP ${err.status} — ` : ''}{err?.message || JSON.stringify(err) || 'Unknown error'}
+        </pre>
+        <p className="text-xs text-gray-500">
+          Kiểm tra: backend đã chạy chưa? Bạn đã đăng nhập chưa? User hiện tại có quyền <code>AbpIdentity.Users</code> không?
+        </p>
+      </div>
+    )
+  }
 
   return (
     <>

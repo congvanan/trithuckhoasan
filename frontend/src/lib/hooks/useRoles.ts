@@ -28,7 +28,7 @@ export const useRoles = (
       if (pageIndex > 0) {
         skip = pageIndex * pageSize
       }
-      const { data } = await roleGetList({
+      const response = await roleGetList({
         query: {
           Filter: filter,
           Sorting: sorting,
@@ -36,7 +36,8 @@ export const useRoles = (
           SkipCount: skip,
         },
       })
-      return data ?? null
+      if (response.error) throw response.error
+      return response.data ?? { items: [], totalCount: 0 }
     },
     staleTime: 5 * 60_000,
   })

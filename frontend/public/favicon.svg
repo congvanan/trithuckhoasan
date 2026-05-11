@@ -1,0 +1,151 @@
+<svg width="260" height="260" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="outerGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(130 130) rotate(90) scale(120 120)">
+      <stop stop-color="#46FFF0" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#46FFF0" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="orbMain" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(114 116) rotate(135) scale(120)">
+      <stop offset="0" stop-color="#C8FFF8"/>
+      <stop offset="0.28" stop-color="#69FFF0"/>
+      <stop offset="0.58" stop-color="#16D6C9"/>
+      <stop offset="1" stop-color="#005C62"/>
+    </radialGradient>
+
+    <linearGradient id="orbRim" x1="20" y1="35" x2="215" y2="215" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D8FFFF"/>
+      <stop offset="0.35" stop-color="#79FFF4"/>
+      <stop offset="1" stop-color="#009A9A"/>
+    </linearGradient>
+
+    <linearGradient id="orbitGrad" x1="-22" y1="168" x2="242" y2="168" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9FFFF7"/>
+      <stop offset="0.5" stop-color="#1CE1D4"/>
+      <stop offset="1" stop-color="#007F85"/>
+    </linearGradient>
+
+    <filter id="smallGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- General glow -->
+  <ellipse cx="145" cy="128" rx="135" ry="95" fill="url(#outerGlow)"/>
+
+  <!-- Orb -->
+  <circle cx="110" cy="120" r="96" fill="url(#orbMain)" opacity="0.18"/>
+  <circle cx="110" cy="120" r="90" fill="url(#orbMain)"/>
+  <circle cx="110" cy="120" r="92" stroke="url(#orbRim)" stroke-width="6" opacity="0.9"/>
+  <circle cx="110" cy="120" r="78" stroke="#B7FFF8" stroke-opacity="0.28" stroke-width="2"/>
+
+  <!-- Shine -->
+  <path d="M55 58C75 33 123 22 160 35C124 33 92 50 70 78C57 95 48 117 46 136C35 113 37 80 55 58Z"
+        fill="#F0FFFF" fill-opacity="0.32"/>
+  <circle cx="42" cy="82" r="4" fill="#E7FFFF" filter="url(#smallGlow)"/>
+  <circle cx="26" cy="177" r="3.5" fill="#76FFF2" filter="url(#smallGlow)"/>
+  <circle cx="205" cy="80" r="7" fill="#54FFF0" filter="url(#smallGlow)"/>
+  <circle cx="234" cy="122" r="4.5" fill="#5DFFF2" filter="url(#smallGlow)"/>
+  <circle cx="216" cy="148" r="9" fill="#58FFF1" filter="url(#smallGlow)"/>
+
+  <!-- Mother hair / back -->
+  <path d="
+    M78 50
+    C102 42 128 46 146 60
+    C160 71 167 87 165 104
+    C162 125 149 141 141 156
+    C133 170 124 182 108 189
+    C93 196 74 194 59 186
+    C43 178 32 164 30 147
+    C28 131 34 115 45 100
+    C54 88 64 76 71 65
+    C75 59 77 54 78 50Z"
+    fill="#0A6668"/>
+
+  <!-- Hair light -->
+  <path d="
+    M68 66
+    C86 48 120 46 141 58
+    C122 58 104 64 88 78
+    C73 92 61 110 53 128
+    C48 138 46 148 47 157
+    C38 146 37 124 45 104
+    C50 91 58 78 68 66Z"
+    fill="#9FFFF8" fill-opacity="0.95"/>
+
+  <!-- Face and neck -->
+  <path d="
+    M129 73
+    C122 78 119 87 116 95
+    C112 106 103 113 92 116
+    C96 120 103 123 111 123
+    C121 123 130 119 137 112
+    C144 104 147 94 145 84
+    C144 77 138 72 129 73Z"
+    fill="#F8FFFF"/>
+
+  <!-- Mother chest / body -->
+  <path d="
+    M93 116
+    C104 123 114 136 121 148
+    C127 159 131 168 138 173
+    C127 177 113 175 102 170
+    C90 165 80 156 73 146
+    C67 137 65 127 69 121
+    C74 115 83 113 93 116Z"
+    fill="#F8FFFF"/>
+
+  <!-- Baby head -->
+  <circle cx="166" cy="124" r="26" fill="#0C7A7E"/>
+
+  <!-- Baby face highlight -->
+  <path d="
+    M153 102
+    C168 100 182 106 189 118
+    C182 111 173 107 162 107
+    C157 107 155 106 153 102Z"
+    fill="#DFFFFF" fill-opacity="0.95"/>
+
+  <!-- Baby body -->
+  <path d="
+    M154 149
+    C146 156 136 162 123 166
+    C110 170 96 169 84 164
+    C93 162 102 159 110 154
+    C119 148 126 141 133 134
+    C140 127 148 123 158 123
+    C169 123 179 128 185 137
+    C180 140 174 143 168 145
+    C162 146 157 147 154 149Z"
+    fill="#F8FFFF"/>
+
+  <!-- Mother arm hugging baby -->
+  <path d="
+    M88 154
+    C105 154 122 149 137 140
+    C147 134 158 131 168 133"
+    stroke="#CFFFFB"
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+
+  <!-- Cross -->
+  <g filter="url(#smallGlow)">
+    <rect x="18" y="146" width="42" height="12" rx="3" fill="#E9FFFF"/>
+    <rect x="33" y="131" width="12" height="42" rx="3" fill="#E9FFFF"/>
+  </g>
+
+  <!-- Orbit ring -->
+  <ellipse cx="106" cy="172" rx="136" ry="35" stroke="url(#orbitGrad)" stroke-width="8" fill="none"/>
+  <ellipse cx="106" cy="172" rx="122" ry="28" stroke="#003E44" stroke-width="10" fill="none" opacity="0.55"/>
+
+  <!-- Small orbit bubbles -->
+  <circle cx="206" cy="83" r="10" fill="url(#orbMain)" opacity="0.95"/>
+  <circle cx="230" cy="117" r="8" fill="url(#orbMain)" opacity="0.95"/>
+  <circle cx="216" cy="150" r="12" fill="url(#orbMain)" opacity="0.95"/>
+</svg>

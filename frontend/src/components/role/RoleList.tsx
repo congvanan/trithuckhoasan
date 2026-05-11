@@ -39,7 +39,7 @@ export const RoleList = () => {
     [pageIndex, pageSize, toast]
   )
 
-  const { isLoading, data, isError } = useRoles(pageIndex, pageSize, searchStr)
+  const { isLoading, data, isError, error } = useRoles(pageIndex, pageSize, searchStr)
   const queryClient = useQueryClient()
 
   const defaultColumns: ColumnDef<IdentityRoleDto>[] = useMemo(
@@ -127,7 +127,20 @@ export const RoleList = () => {
   })
 
   if (isLoading) return <Loader />
-  if (isError) return <Error />
+  if (isError) {
+    const err = error as { message?: string; status?: number } | null
+    return (
+      <div className="p-6 space-y-3">
+        <div className="text-red-600 font-medium">Không tải được danh sách vai trò</div>
+        <pre className="text-xs bg-red-50 border border-red-200 rounded p-3 whitespace-pre-wrap break-all">
+          {err?.status ? `HTTP ${err.status} — ` : ''}{err?.message || JSON.stringify(err) || 'Unknown error'}
+        </pre>
+        <p className="text-xs text-gray-500">
+          Kiểm tra: backend đã chạy chưa? Bạn đã đăng nhập chưa? User hiện tại có quyền <code>AbpIdentity.Roles</code> không?
+        </p>
+      </div>
+    )
+  }
 
   return (
     <>

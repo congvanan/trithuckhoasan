@@ -7,9 +7,8 @@ import { defaultPlugins, defineConfig } from '@hey-api/openapi-ts'
 
 export default defineConfig({
   // Địa chỉ lấy file swagger.json từ backend ABP
-  // Thay URL này thành backend local nếu muốn gen từ API local:
-  // input: 'https://localhost:44321/swagger/v1/swagger.json'
-  input: 'https://abp.antosubash.com/swagger/v1/swagger.json',
+  // Gen client từ backend local đang chạy ở cổng 44322
+  input: 'https://localhost:44322/swagger/v1/swagger.json',
 
   // Thư mục xuất ra các file được tự động sinh (không chỉnh sửa tay)
   output: 'src/client',

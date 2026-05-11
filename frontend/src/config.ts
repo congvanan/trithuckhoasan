@@ -1,5 +1,5 @@
 // Import các icon từ thư viện lucide-react để dùng trong menu
-import { BookOpenCheck, Cog, Database, FileText, Home, House, ImageIcon, Layers3, LibraryBig, Menu, MessageSquare, Microscope, Newspaper, PenLine, Rss, Search, Sparkles, UserRound, Users } from 'lucide-react'
+import { Bot, BookOpenCheck, ClipboardList, Cog, Database, FileText, Home, House, ImageIcon, Layers3, LibraryBig, ListChecks, Menu, MessageSquare, Microscope, Newspaper, PenLine, Rss, Search, Sliders, Sparkles, UserRound, Users } from 'lucide-react'
 import React from 'react'
 
 /**
@@ -7,16 +7,17 @@ import React from 'react'
  * Tất cả giá trị đọc từ file .env.local để dễ thay đổi theo môi trường.
  */
 export const clientConfig = {
-  // Địa chỉ URL của backend API (vd: https://localhost:44321)
+  // Địa chỉ HttpApiHost — vừa là OpenIddict server (OIDC discovery) vừa là API server
+  // Next.js dùng 44322 cho cả auth lẫn API. AuthServer 44391 dành cho Blazor clients.
   url: process.env.NEXT_PUBLIC_API_URL,
 
-  // Đối tượng nhận token (thường giống url)
+  // Đối tượng nhận token
   audience: process.env.NEXT_PUBLIC_API_URL,
 
   // ID của ứng dụng đã đăng ký trong OpenIddict backend (vd: AbpReact_Next_App)
   client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
 
-  // Các quyền truy cập yêu cầu (vd: openid profile email MyAbpApp offline_access)
+  // Các quyền truy cập yêu cầu (vd: openid profile email Mydoctor offline_access)
   scope: process.env.NEXT_PUBLIC_SCOPE,
 
   // URL backend sẽ redirect về sau khi user đăng nhập thành công
@@ -170,6 +171,17 @@ export const AdminMenus: Array<{
         link: '/admin/cms/blog-posts',
         icon: PenLine,
       },
+    ],
+  },
+  {
+    name: 'Trợ lý AI',    // Quản lý chatbot RAG
+    link: '/admin/ai',
+    icon: Bot,
+    submenus: [
+      { name: 'Nguồn dữ liệu', link: '/admin/ai/sources', icon: LibraryBig },
+      { name: 'Cấu hình AI',   link: '/admin/ai/settings', icon: Sliders },
+      { name: 'Tác vụ ingest', link: '/admin/ai/jobs',     icon: ListChecks },
+      { name: 'Nhật ký hội thoại', link: '/admin/ai/logs',  icon: ClipboardList },
     ],
   },
   {

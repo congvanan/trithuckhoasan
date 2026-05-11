@@ -15,7 +15,7 @@ import { config } from '@/components/puck/config'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Render } from '@measured/puck'
+import { type Data, Render } from '@measured/puck'
 import { AlertTriangle, FileText, RefreshCw } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
 
@@ -219,7 +219,7 @@ export const PageView = ({ page }: PageViewProps) => {
           <div className="flex-1 min-w-0">
             {puckData ? (
               <ErrorBoundary onError={handleRenderError}>
-                <Render config={config} data={ensureValidPuckData(puckData) as any} />
+                <Render config={config} data={ensureValidPuckData(puckData) as Data} />
               </ErrorBoundary>
             ) : (
               <div className="flex items-center justify-center min-h-[400px]">

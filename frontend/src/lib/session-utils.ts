@@ -46,6 +46,7 @@ let _cachedClientConfig: Awaited<ReturnType<typeof client.discovery>> | null = n
 export async function getClientConfig() {
   if (!_cachedClientConfig) {
     _cachedClientConfig = await client.discovery(new URL(clientConfig.url!), clientConfig.client_id!)
+    // clientConfig.url = NEXT_PUBLIC_API_URL (HttpApiHost 44322) — vừa là OpenIddict server vừa là API
   }
   return _cachedClientConfig
 }

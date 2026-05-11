@@ -15,7 +15,7 @@ import { usePermissions } from '@/lib/hooks/usePermissions'
 import { useUserRoles } from '@/lib/hooks/useUserRoles'
 import { useUserExists } from '@/lib/hooks/useUserExists'
 import { useTranslation } from '@/lib/hooks/useTranslation'
-import { PermissionProvider, USER_ROLE } from '@/lib/utils'
+import { PermissionProvider } from '@/lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { permissionsUpdate, UpdatePermissionsDto } from '@/client'
 
@@ -148,11 +148,7 @@ export default function PermissionsPage() {
     }
   }, [permissionGroups])
 
-  const hasAdmin = entityType === 'role' 
-    ? entityId.includes(USER_ROLE.ADMIN)
-    : userRoles?.data?.items?.some(role => role.name?.includes(USER_ROLE.ADMIN)) || false
-
-  const filteredGroups = searchTerm ? permissionGroups.map(group => ({
+const filteredGroups = searchTerm ? permissionGroups.map(group => ({
     ...group,
     permissions: group.permissions?.filter((permission: any) => {
       const translatedName = getTranslatedPermissionName(permission.name)
@@ -397,7 +393,6 @@ export default function PermissionsPage() {
               <Button
                 variant={hasAllGranted ? "outline" : "default"}
                 onClick={handleGrantAll}
-                disabled={hasAdmin}
                 className="w-full sm:w-auto sm:min-w-[120px]"
               >
                 {hasAllGranted ? 'Revoke All' : 'Grant All'}
@@ -405,19 +400,6 @@ export default function PermissionsPage() {
             </div>
           </CardContent>
         </Card>
-
-        {hasAdmin && (
-          <Card className="border-orange-200 bg-orange-50">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-orange-800">
-                <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-                <span className="text-sm font-medium">
-                  Admin permissions cannot be modified for security reasons.
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {!hasAllGranted && (
           <>
@@ -510,7 +492,6 @@ export default function PermissionsPage() {
                                   setPermissionGroups([...permissionGroups])
                                   handlePermissionChange()
                                 }}
-                                disabled={hasAdmin}
                                 className="w-full sm:w-auto"
                               >
                                 {permission.isGranted ? 'Revoke' : 'Grant'}

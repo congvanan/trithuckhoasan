@@ -1,29 +1,13 @@
 import { BlogPostCommonDto } from '@/client'
+import { getBlogLabel } from '@/lib/constants/blogs'
+import { formatDatetime } from '@/lib/utils/formatDate'
+import { parseCoverImage } from '@/lib/utils/parseCoverImage'
 import { Calendar, ChevronRight, FolderOpen, Home, Search } from 'lucide-react'
 import Link from 'next/link'
 
 const PAGE_SIZE = 10
 
-function parseCover(raw?: string | null): { cover: string | null; desc: string } {
-  if (!raw) return { cover: null, desc: '' }
-  const idx = raw.indexOf('|')
-  if (idx > 0 && raw.startsWith('http')) return { cover: raw.slice(0, idx), desc: raw.slice(idx + 1) }
-  return { cover: null, desc: raw }
-}
-
-function formatDate(d?: string | null) {
-  if (!d) return ''
-  const dt = new Date(d)
-  return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`
-}
-
-function getBlogLabel(slug: string) {
-  const map: Record<string, string> = {
-    'tin-chuyen-nghanh': 'Thông tin chuyên ngành',
-    'tin-quoc-te': 'Tin quốc tế',
-  }
-  return map[slug] ?? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-}
+const formatDate = formatDatetime
 
 async function fetchPosts(blogSlug: string, page: number, limit: number) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL
@@ -130,8 +114,8 @@ export default async function BlogListPage({
               <>
                 <div className="space-y-4">
                   {posts.map((post: BlogPostCommonDto) => {
-                    const { cover, desc } = parseCover(post.shortDescription)
-                    const imgUrl = cover ?? (post.coverImageMediaId ? `/api/cms-kit/media/${post.coverImageMediaId}` : null)
+                    const { imageUrl, description: desc } = parseCoverImage(post)
+                    const imgUrl = imageUrl || null
                     return (
                       <div key={post.id} className="bg-white rounded border hover:shadow-sm transition-shadow">
                         <div className="flex gap-4 p-4">
@@ -195,8 +179,8 @@ export default async function BlogListPage({
               <h3 className="font-bold text-gray-700 uppercase text-sm border-b-2 border-blue-500 pb-1.5 mb-3">Bài viết mới nhất</h3>
               <div className="space-y-3">
                 {latestPosts.map((post: BlogPostCommonDto) => {
-                  const { cover } = parseCover(post.shortDescription)
-                  const imgUrl = cover ?? (post.coverImageMediaId ? `/api/cms-kit/media/${post.coverImageMediaId}` : null)
+                  const { imageUrl } = parseCoverImage(post)
+                  const imgUrl = imageUrl || null
                   return (
                     <Link key={post.id} href={`/blog/${blogSlug}/${post.slug}`}
                       className="flex gap-2 group hover:bg-gray-50 rounded p-1 -mx-1">

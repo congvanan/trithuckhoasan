@@ -1,12 +1,12 @@
 'use client'
+import { BLOG_LABELS } from '@/lib/constants/blogs'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef } from 'react'
 
 const BLOG_CATEGORIES = [
   { value: 'all', label: 'Tất cả (Tin tức & Thư viện)' },
-  { value: 'tin-chuyen-nghanh', label: 'Thông tin chuyên ngành' },
-  { value: 'tin-quoc-te', label: 'Tin quốc tế' },
+  ...Object.entries(BLOG_LABELS).map(([value, label]) => ({ value, label })),
 ]
 
 interface Props {

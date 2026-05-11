@@ -1,6 +1,8 @@
 'use client'
 
 import type { BlogPostCommonDto } from '@/client/types.gen'
+import { formatDate } from '@/lib/utils/formatDate'
+import { parseCoverImage } from '@/lib/utils/parseCoverImage'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Calendar, FolderOpen, ArrowRight } from 'lucide-react'
@@ -10,18 +12,9 @@ const TABS = [
   { label: 'Tin quốc tế', blogSlug: 'tin-quoc-te' },
 ]
 
-function formatDate(dateStr?: string | null) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`
-}
-
 function getCoverUrl(post: BlogPostCommonDto): string {
-  if (post.shortDescription?.startsWith('http') && post.shortDescription.includes('|')) {
-    return post.shortDescription.split('|')[0]
-  }
-  if (post.coverImageMediaId) return `/api/cms-kit/media/${post.coverImageMediaId}`
-  return '/img/news-placeholder.png'
+  const { imageUrl } = parseCoverImage(post)
+  return imageUrl || '/img/news-placeholder.png'
 }
 
 function NewsCard({ post, blogSlug, categoryLabel }: { post: BlogPostCommonDto; blogSlug: string; categoryLabel: string }) {

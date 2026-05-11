@@ -17,8 +17,8 @@ const fontSans = FontSans({
 })
 
 export const metadata: Metadata = {
-  title: 'ABP React',
-  description: 'The best way to build ABP apps',
+  title: 'Sanphukhoa360',
+  description: 'Tri thức khỏe sản - Thông tin y khoa chuyên sâu về sản phụ khoa',
 }
 
 /**
@@ -38,8 +38,6 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-        <title>Abp React</title>
         {process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL && process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
           <UmamiAnalytics
             scriptUrl={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}

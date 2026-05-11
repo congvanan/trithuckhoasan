@@ -1,0 +1,243 @@
+/* Your Global Styles */
+
+:root .lpx-brand-logo {
+    --lpx-logo: url('/images/logo/leptonx/logo-light.png');
+    --lpx-logo-icon: url('/images/logo/leptonx/logo-light-thumbnail.png');
+}
+
+/* ============================================================
+   TRANG ĐĂNG NHẬP - Tông màu phòng khám sản phụ khoa
+   ============================================================ */
+
+/* Nền gradient teal y tế */
+body.abp-account-layout {
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 40%, #14b8a6 70%, #0891b2 100%) !important;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Hiệu ứng hình tròn trang trí phía sau */
+body.abp-account-layout::before {
+    content: '';
+    position: fixed;
+    top: -120px;
+    right: -120px;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body.abp-account-layout::after {
+    content: '';
+    position: fixed;
+    bottom: -100px;
+    left: -100px;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Container chính */
+.abp-account-layout .container,
+.abp-account-layout .container-fluid {
+    position: relative;
+    z-index: 1;
+}
+
+/* Brand / logo phía trên */
+.lpx-brand {
+    color: #ffffff !important;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.lpx-brand .lpx-brand-text {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.3px;
+}
+
+/* Ẩn tên app mặc định "MyAbpApp", thay bằng CSS */
+.lpx-brand-text::after {
+    content: 'Phòng Khám Hồng Ngọc';
+}
+
+/* Card form đăng nhập */
+.abp-account-layout .card,
+.account-card,
+.lpx-account-form .card {
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0,0,0,0.1) !important;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+/* Header của card (Tenant section) */
+.abp-account-layout .card:first-child {
+    border-radius: 16px !important;
+    background: rgba(255,255,255,0.95) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    margin-bottom: 12px;
+}
+
+/* Card body form login */
+.abp-account-layout .card .card-body {
+    padding: 2rem 2.2rem !important;
+    background: #ffffff;
+}
+
+/* Tiêu đề "Login" */
+.abp-account-layout .card .card-body h4,
+.abp-account-layout .card .card-body h3,
+.abp-account-layout h4.card-title {
+    color: #0f766e !important;
+    font-weight: 700 !important;
+    font-size: 1.6rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+/* Subtitle "Are you a new user? Register" */
+.abp-account-layout .card .card-body p,
+.abp-account-layout .card .card-body .register-link-p {
+    color: #64748b !important;
+    font-size: 0.88rem;
+}
+
+/* Labels */
+.abp-account-layout .form-label,
+.abp-account-layout label {
+    color: #374151 !important;
+    font-weight: 600 !important;
+    font-size: 0.82rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem !important;
+}
+
+/* Input fields */
+.abp-account-layout .form-control {
+    border-radius: 10px !important;
+    border: 1.5px solid #d1d5db !important;
+    padding: 0.6rem 1rem !important;
+    font-size: 0.95rem !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #f8fafc !important;
+    color: #1e293b !important;
+}
+
+.abp-account-layout .form-control:focus {
+    border-color: #14b8a6 !important;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15) !important;
+    background: #ffffff !important;
+    outline: none;
+}
+
+/* Nút ĐĂNG NHẬP - điểm nhấn chính */
+.abp-account-layout .btn-primary {
+    background: linear-gradient(135deg, #0f766e, #0d9488) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 16px rgba(15, 118, 110, 0.4) !important;
+    transition: transform 0.15s, box-shadow 0.15s !important;
+    width: 100%;
+}
+
+.abp-account-layout .btn-primary:hover {
+    background: linear-gradient(135deg, #0d6b64, #0c8478) !important;
+    box-shadow: 0 6px 20px rgba(15, 118, 110, 0.5) !important;
+    transform: translateY(-1px);
+}
+
+.abp-account-layout .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(15, 118, 110, 0.3) !important;
+}
+
+/* Link "Register" */
+.abp-account-layout a {
+    color: #0d9488 !important;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.abp-account-layout a:hover {
+    color: #0f766e !important;
+    text-decoration: underline;
+}
+
+/* Nút Switch tenant */
+.abp-account-layout .btn-outline-secondary {
+    border-color: #14b8a6 !important;
+    color: #0d9488 !important;
+    border-radius: 8px !important;
+    font-weight: 600;
+}
+
+.abp-account-layout .btn-outline-secondary:hover {
+    background: #0d9488 !important;
+    color: #ffffff !important;
+}
+
+/* Dropdown ngôn ngữ */
+.abp-account-layout .btn-light,
+.abp-account-layout .dropdown-toggle {
+    border-radius: 8px !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+    background: rgba(255,255,255,0.15) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(4px);
+}
+
+.abp-account-layout .btn-light:hover {
+    background: rgba(255,255,255,0.25) !important;
+    color: #ffffff !important;
+}
+
+/* Badge TENANT */
+.abp-account-layout .badge,
+.abp-account-layout small.text-muted {
+    color: #6b7280 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+}
+
+/* Checkbox "Remember me" */
+.abp-account-layout .form-check-input:checked {
+    background-color: #0d9488 !important;
+    border-color: #0d9488 !important;
+}
+
+/* Divider hoặc alert lỗi */
+.abp-account-layout .alert-danger {
+    border-radius: 10px !important;
+    border-left: 4px solid #ef4444 !important;
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
+}
+
+/* Chú thích phía dưới form (optional) */
+.abp-account-layout .text-muted {
+    color: #94a3b8 !important;
+}
+
+/* Responsive: căn giữa trên mobile */
+@media (max-width: 576px) {
+    .abp-account-layout .card .card-body {
+        padding: 1.5rem 1.2rem !important;
+    }
+}

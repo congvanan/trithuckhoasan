@@ -7,13 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { QueryNames } from '@/lib/hooks/QueryConstants'
 import { useFeatures } from '@/lib/hooks/useFeatures'
-import { PermissionProvider, Permissions } from '@/lib/utils'
+import { PermissionProvider } from '@/lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { Search } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { v4 } from 'uuid'
 import { Checkbox } from '../ui/checkbox'
 import { useToast } from '../ui/use-toast'
 
@@ -25,8 +26,8 @@ export type FeatureListProps = {
 export const FeatureList = ({ onDismiss, tenantId }: FeatureListProps) => {
   const { data } = useFeatures(PermissionProvider.T, tenantId)
   const queryClient = useQueryClient()
-  const [enableSetting, setEnableSetting] = useState<boolean>(false)
-  const [enableEmailSetting, setEnableEmailSetting] = useState<boolean>(false)
+  const [featureValues, setFeatureValues] = useState<Record<string, boolean>>({})
+  const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
   const { handleSubmit } = useForm()
   const { toast } = useToast()
@@ -38,15 +39,13 @@ export const FeatureList = ({ onDismiss, tenantId }: FeatureListProps) => {
 
   useEffect(() => {
     setOpen(true)
+    const initialValues: Record<string, boolean> = {}
     data?.groups?.forEach((g) => {
       g.features?.forEach((f) => {
-        if (f.name === Permissions.SETTINGS_EMAILING && f.value === 'true') {
-          setEnableSetting(true)
-        } else if (f.name === Permissions.SETTINGS_EMAILING_TEST && f.value === 'true') {
-          setEnableEmailSetting(true)
-        }
+        if (f.name) initialValues[f.name] = f.value === 'true'
       })
     })
+    setFeatureValues(initialValues)
     return () => {
       queryClient.invalidateQueries({ queryKey: [QueryNames.GetFeatures] }).then()
       queryClient.invalidateQueries({ queryKey: [QueryNames.GetTenants] }).then()
@@ -55,27 +54,45 @@ export const FeatureList = ({ onDismiss, tenantId }: FeatureListProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onDismiss, data])
 
-  const onCheckedEvent = (value: boolean, name: string) => {
-    if (name === Permissions.SETTINGS_EMAILING) {
-      setEnableSetting(value)
-    } else if (name === Permissions.SETTINGS_EMAILING_TEST) {
-      setEnableEmailSetting(value)
-    }
-  }
+  const allFeatures = useMemo(
+    () =>
+      data?.groups?.flatMap((group) =>
+        (group.features ?? []).map((feature) => ({
+          ...feature,
+          groupName: group.name,
+          groupDisplayName: group.displayName,
+        })),
+      ) ?? [],
+    [data],
+  )
+
+  const filteredGroups = useMemo(() => {
+    const normalized = filter.trim().toLowerCase()
+    if (!normalized) return data?.groups ?? []
+
+    return (data?.groups ?? [])
+      .map((group) => ({
+        ...group,
+        features: (group.features ?? []).filter((feature) =>
+          [group.displayName, feature.displayName, feature.description, feature.name]
+            .filter(Boolean)
+            .some((value) => value!.toLowerCase().includes(normalized)),
+        ),
+      }))
+      .filter((group) => (group.features?.length ?? 0) > 0)
+  }, [data, filter])
+
+  const enabledCount = Object.values(featureValues).filter(Boolean).length
 
   const onSubmit = async () => {
     try {
       const featureUpdateDto = {} as UpdateFeaturesDto
-      featureUpdateDto.features = [
-        {
-          name: Permissions.SETTINGS_EMAILING,
-          value: enableSetting.toString(),
-        },
-        {
-          name: Permissions.SETTINGS_EMAILING_TEST,
-          value: enableEmailSetting.toString(),
-        },
-      ]
+      featureUpdateDto.features = allFeatures
+        .filter((feature) => feature.name)
+        .map((feature) => ({
+          name: feature.name!,
+          value: Boolean(featureValues[feature.name!]).toString(),
+        }))
 
       await featuresUpdate({
         body: featureUpdateDto,
@@ -123,52 +140,103 @@ export const FeatureList = ({ onDismiss, tenantId }: FeatureListProps) => {
   return (
     <section className="p-3">
       <Dialog open={open} onOpenChange={onCloseEvent}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Features</DialogTitle>
+        <DialogContent className="flex max-h-[calc(100vh-2rem)] w-[min(1120px,calc(100vw-2rem))] max-w-none flex-col gap-0 overflow-hidden p-0">
+          <DialogHeader className="border-b px-6 py-4">
+            <DialogTitle>Tenant features</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              {enabledCount} / {allFeatures.length} features enabled
+            </p>
           </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-1 items-baseline gap-2 sm:grid-cols-[12rem_minmax(10rem,1fr)_auto]">
-              <div className="p-3">
-                {data?.groups?.map((el: FeatureGroupDto) => (
-                  <span key={v4()}>{el.displayName}</span>
-                ))}
-              </div>
-              <div className="mt-5 p-3">
-                {data?.groups?.map((el: FeatureGroupDto) => (
-                  <div key={v4()}>
-                    <h3 className="text-xl font-medium">{el.displayName}</h3>
-                    <hr className="mt-2 w-full pb-2" />
-                    {el.features?.map((feature) => (
-                      <div key={v4()} className="mt-2 text-base">
-                        <Checkbox
-                          id={`${feature.name}_enable`}
-                          name={feature.name!}
-                          checked={
-                            feature.name === Permissions.SETTINGS_EMAILING
-                              ? enableSetting
-                              : enableEmailSetting
-                          }
-                          onCheckedChange={(checked) =>
-                            onCheckedEvent(!!checked.valueOf(), feature.name!)
-                          }
-                        />
-                        <label
-                          htmlFor={`${feature.name}_enable`}
-                          className="text-sm font-medium leading-none"
-                        >
-                          <span className="pl-2">{feature.displayName}</span>
-                        </label>
-                        <p className="pl-6 pt-1 text-xs">{feature.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                ))}
+          <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col">
+            <div className="border-b px-6 py-3">
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={filter}
+                  onChange={(event) => setFilter(event.target.value)}
+                  placeholder="Search features..."
+                  className="pl-9"
+                />
               </div>
             </div>
 
-            <DialogFooter className="mt-5">
+            <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)]">
+              <aside className="hidden overflow-y-auto border-r bg-muted/30 p-4 lg:block">
+                <div className="space-y-2">
+                  {(data?.groups ?? []).map((group: FeatureGroupDto) => {
+                    const count = group.features?.length ?? 0
+                    const enabled = group.features?.filter((feature) =>
+                      feature.name ? featureValues[feature.name] : false,
+                    ).length ?? 0
+                    return (
+                      <div key={group.name ?? group.displayName} className="rounded-md px-3 py-2 text-sm">
+                        <div className="font-medium">{group.displayName}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {enabled}/{count} enabled
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </aside>
+
+              <div className="max-h-[calc(100vh-15rem)] overflow-y-auto overflow-x-hidden px-6 py-4">
+                {filteredGroups.length === 0 && (
+                  <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+                    No features match your search.
+                  </div>
+                )}
+                <div className="space-y-6">
+                  {filteredGroups.map((group: FeatureGroupDto) => (
+                    <section key={group.name ?? group.displayName}>
+                      <div className="sticky top-0 z-10 -mx-2 bg-background px-2 py-2">
+                        <h3 className="text-base font-semibold">{group.displayName}</h3>
+                      </div>
+                      <div className="grid gap-2">
+                        {group.features?.map((feature) => {
+                          const name = feature.name ?? ''
+                          return (
+                            <label
+                              key={name || feature.displayName}
+                              htmlFor={`${name}_enable`}
+                              className="flex cursor-pointer gap-3 rounded-lg border p-3 transition hover:bg-muted/50"
+                            >
+                              <Checkbox
+                                id={`${name}_enable`}
+                                name={name}
+                                checked={Boolean(featureValues[name])}
+                                onCheckedChange={(checked) =>
+                                  setFeatureValues((prev) => ({
+                                    ...prev,
+                                    [name]: checked === true,
+                                  }))
+                                }
+                                className="mt-0.5"
+                              />
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-sm font-medium leading-5">
+                                  {feature.displayName}
+                                </span>
+                                {feature.description && (
+                                  <span className="mt-1 block text-xs leading-5 text-muted-foreground break-words">
+                                    {feature.description}
+                                  </span>
+                                )}
+                              </span>
+                            </label>
+                          )
+                        })}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="border-t bg-background px-6 py-4">
               <Button
+                type="button"
+                variant="outline"
                 onClick={async (e: { preventDefault: () => void }) => {
                   e.preventDefault()
                   await onResetToDefaultEvent()
@@ -177,6 +245,8 @@ export const FeatureList = ({ onDismiss, tenantId }: FeatureListProps) => {
                 Reset to default
               </Button>
               <Button
+                type="button"
+                variant="outline"
                 onClick={(e: { preventDefault: () => void }) => {
                   e.preventDefault()
                   onCloseEvent()

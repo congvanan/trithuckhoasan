@@ -1,0 +1,145 @@
+/* ========================================
+   MYDOCTOR - Global Styles
+   Brand colors: teal #16D6C9 / dark teal #005C62
+   ======================================== */
+
+/* ---- Logo (LeptonX CSS variables) ---- */
+:root .lpx-brand-logo {
+    --lpx-logo: url('/images/logo/leptonx/logo-light.svg');
+    --lpx-logo-icon: url('/images/logo/leptonx/logo-light-thumbnail.svg');
+}
+
+[data-bs-theme="dark"] .lpx-brand-logo,
+.lpx-side-menu .lpx-brand-logo {
+    --lpx-logo: url('/images/logo/leptonx/logo-dark.svg');
+    --lpx-logo-icon: url('/images/logo/leptonx/logo-dark-thumbnail.svg');
+}
+
+/* ---- Login / Authentication Page ---- */
+
+/* Background toàn trang */
+body.abp-account-layout,
+.lpx-authentication-wrapper,
+.abp-account-container {
+    background: linear-gradient(135deg, #e8fffe 0%, #f0fbfb 40%, #e0f7f7 100%) !important;
+    min-height: 100vh;
+}
+
+/* Card trung tâm */
+.lpx-authentication-card,
+.abp-account-card,
+body.abp-account-layout .card {
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 12px 48px rgba(0, 92, 98, 0.12), 0 2px 8px rgba(0, 92, 98, 0.08) !important;
+    overflow: hidden;
+}
+
+/* Logo area trên form */
+.lpx-authentication-logo,
+.account-brand,
+.abp-account-logo {
+    text-align: center;
+    padding: 32px 24px 16px !important;
+}
+
+.lpx-authentication-logo img,
+.account-brand img,
+.abp-account-logo img {
+    height: 56px !important;
+    width: auto !important;
+}
+
+/* Tenant section */
+.lpx-authentication-tenant,
+.abp-tenant-switch-wrapper {
+    background: #f0fbfb !important;
+    border-bottom: 1px solid #d0f5f3 !important;
+    padding: 10px 24px !important;
+}
+
+
+/* Form inputs */
+.lpx-authentication-card .form-control,
+body.abp-account-layout .form-control {
+    border-radius: 10px !important;
+    border: 1.5px solid #c5eceb !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.lpx-authentication-card .form-control:focus,
+body.abp-account-layout .form-control:focus {
+    border-color: #16D6C9 !important;
+    box-shadow: 0 0 0 3px rgba(22, 214, 201, 0.18) !important;
+}
+
+/* Nút Login chính */
+.lpx-authentication-card .btn-primary,
+body.abp-account-layout .btn-primary,
+.lpx-btn-primary {
+    background: linear-gradient(135deg, #16D6C9 0%, #009A9A 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 11px 28px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    transition: opacity 0.2s, transform 0.15s !important;
+}
+
+.lpx-authentication-card .btn-primary:hover,
+body.abp-account-layout .btn-primary:hover {
+    opacity: 0.9 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Link màu brand */
+.lpx-authentication-card a,
+body.abp-account-layout .form-text a {
+    color: #009A9A !important;
+    font-weight: 500;
+}
+
+.lpx-authentication-card a:hover,
+body.abp-account-layout .form-text a:hover {
+    color: #005C62 !important;
+}
+
+/* Tiêu đề form (Login, Register...) */
+.lpx-authentication-card h1,
+.lpx-authentication-card h2,
+.lpx-authentication-card h3,
+body.abp-account-layout h1,
+body.abp-account-layout h2 {
+    color: #0A3D40 !important;
+    font-weight: 700 !important;
+}
+
+/* Language switcher */
+.lpx-authentication-card .dropdown-toggle,
+body.abp-account-layout .dropdown-toggle {
+    border-radius: 8px !important;
+    border-color: #c5eceb !important;
+    color: #0A3D40 !important;
+}
+
+/* Labels */
+.lpx-authentication-card label,
+body.abp-account-layout label {
+    font-weight: 500;
+    color: #2a5f62;
+    font-size: 0.875rem;
+}
+
+/* Checkbox - Remember me */
+.lpx-authentication-card .form-check-input:checked {
+    background-color: #16D6C9 !important;
+    border-color: #16D6C9 !important;
+}
+
+/* App name text */
+.lpx-brand-name,
+.account-brand h1 {
+    color: #0A3D40 !important;
+    font-weight: 700 !important;
+}
