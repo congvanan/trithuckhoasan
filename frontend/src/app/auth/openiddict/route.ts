@@ -2,7 +2,7 @@ import { clientConfig } from '@/config'
 import { getSession } from '@/lib/actions'
 import { createRedisInstance, RedisSession } from '@/lib/redis'
 import { getClientConfig } from '@/lib/session-utils'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { NextRequest } from 'next/server'
 import * as client from 'openid-client'
 
@@ -37,16 +37,23 @@ export async function GET(request: NextRequest) {
   const currentUrl = new URL(
     `${protocol}://${host}${request.nextUrl.pathname}${request.nextUrl.search}`
   )
+  // PKCE verifier/state nằm ở cookie riêng (xem /auth/login) để không bị
+  // các route khác save() iron-session song song ghi đè mất.
+  const cookieStore = await cookies()
+  const code_verifier = cookieStore.get('pkce_code_verifier')?.value || session.code_verifier
+  const state = cookieStore.get('auth_state')?.value || session.state
   let tokenSet: Awaited<ReturnType<typeof client.authorizationCodeGrant>>
   try {
     tokenSet = await client.authorizationCodeGrant(openIdClientConfig, currentUrl, {
-      pkceCodeVerifier: session.code_verifier,
-      expectedState: session.state,
+      pkceCodeVerifier: code_verifier,
+      expectedState: state,
     })
   } catch (e) {
     console.error('[auth/openiddict] Token exchange failed:', e)
     return new Response(`Token exchange failed: ${(e as Error).message}`, { status: 500 })
   }
+  cookieStore.delete('pkce_code_verifier')
+  cookieStore.delete('auth_state')
   const { access_token, refresh_token } = tokenSet
   session.isLoggedIn = true
   session.access_token = access_token

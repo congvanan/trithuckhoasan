@@ -1,7 +1,21 @@
 import { clientConfig } from '@/config'
 import { getSession } from '@/lib/actions'
 import { getClientConfig } from '@/lib/session-utils'
+import { cookies } from 'next/headers'
 import * as client from 'openid-client'
+
+// PKCE verifier/state được lưu ở cookie riêng thay vì iron-session:
+// các route khác (vd /auth/set-tenant) gọi session.save() song song sẽ
+// ghi đè cookie session bằng snapshot cũ và làm mất code_verifier.
+const PKCE_COOKIE = 'pkce_code_verifier'
+const STATE_COOKIE = 'auth_state'
+const pkceCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/',
+  maxAge: 60 * 10, // đủ cho một lượt đăng nhập
+}
 /**
  * Handles the GET request for the login route.
  *
@@ -41,8 +55,12 @@ export async function GET() {
     parameters.state = state
   }
   let redirectTo = client.buildAuthorizationUrl(openIdClientConfig, parameters)
-  session.code_verifier = code_verifier
-  session.state = state
-  await session.save()
+  const cookieStore = await cookies()
+  cookieStore.set(PKCE_COOKIE, code_verifier, pkceCookieOptions)
+  if (state) {
+    cookieStore.set(STATE_COOKIE, state, pkceCookieOptions)
+  } else {
+    cookieStore.delete(STATE_COOKIE)
+  }
   return Response.redirect(redirectTo.href)
 }
