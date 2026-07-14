@@ -40,20 +40,52 @@ public class EmbeddingPipeline : IEmbeddingPipeline, ITransientDependency
             embeddingProvider,
             await _settingProvider.GetOrNullAsync(AiSettings.EmbeddingModel));
 
-        var texts = ChunkText(payload.Text, chunkSize, chunkOverlap);
         var embedder = await _providerFactory.GetEmbeddingAsync();
-        var result = new List<VectorChunk>(texts.Count);
+        var result = new List<VectorChunk>();
 
-        for (int i = 0; i < texts.Count; i++)
+        // Structure-aware: nếu extractor cung cấp sections theo heading thì chunk
+        // trong phạm vi từng section và gắn header ngữ cảnh (title › heading path)
+        // vào mỗi chunk — cải thiện retrieval vì chunk tự mang ngữ cảnh của nó.
+        // Không có sections thì giữ nguyên hành vi chunk phẳng như cũ.
+        if (payload.Sections is { Count: > 0 })
         {
-            ct.ThrowIfCancellationRequested();
-            var text = texts[i];
+            foreach (var section in payload.Sections)
+            {
+                ct.ThrowIfCancellationRequested();
+                var header = string.IsNullOrWhiteSpace(section.HeadingPath)
+                    ? payload.Title.Trim()
+                    : payload.Title.Trim() + " › " + section.HeadingPath.Trim();
+                var effectiveSize = Math.Min(chunkSize, AiConsts.MaxChunkTextLength - header.Length - 2);
+
+                foreach (var text in ChunkText(section.Text, effectiveSize, chunkOverlap))
+                {
+                    var chunkText = string.IsNullOrWhiteSpace(header) ? text : header + "\n\n" + text;
+                    if (chunkText.Length > AiConsts.MaxChunkTextLength)
+                        chunkText = chunkText[..AiConsts.MaxChunkTextLength];
+                    await EmbedAndAddAsync(chunkText, ct);
+                }
+            }
+        }
+        else
+        {
+            foreach (var text in ChunkText(payload.Text, chunkSize, chunkOverlap))
+            {
+                ct.ThrowIfCancellationRequested();
+                await EmbedAndAddAsync(text, ct);
+            }
+        }
+
+        return result;
+
+        async Task EmbedAndAddAsync(string text, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
             var emb = await embedder.EmbedAsync(new EmbeddingRequest(embedModel, text));
             result.Add(new VectorChunk(
                 _guidGenerator.Create(),
                 documentId,
                 payload.SourceId,
-                i,
+                result.Count,
                 text,
                 EstimateTokens(text),
                 emb.Vector,
@@ -61,8 +93,6 @@ public class EmbeddingPipeline : IEmbeddingPipeline, ITransientDependency
                 tenantId,
                 payload.MetadataJson));
         }
-
-        return result;
     }
 
     private async Task<int> GetIntSetting(string key, int fallback)

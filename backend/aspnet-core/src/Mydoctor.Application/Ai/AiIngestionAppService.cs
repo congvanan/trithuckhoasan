@@ -217,9 +217,13 @@ public class AiIngestionAppService : MydoctorAppService, IAiIngestionAppService
         return string.Join(" | ", parts.Where(x => !string.IsNullOrWhiteSpace(x)));
     }
 
+    // Bump khi thuật toán chunking/extract đổi, để reindex không bị skip bởi
+    // check ContentHash dù nội dung nguồn không đổi (v2: structure-aware chunking)
+    private const string ChunkingVersion = "chunking-v2";
+
     private async Task<(Guid DocumentId, int ChunkCount)> IngestPayloadAsync(ContentPayload payload, AiSource source)
     {
-        var hash = Sha256(payload.Text);
+        var hash = Sha256(ChunkingVersion + "\n" + payload.Text);
 
         AiDocument? doc = null;
         if (!string.IsNullOrEmpty(payload.ExternalId))

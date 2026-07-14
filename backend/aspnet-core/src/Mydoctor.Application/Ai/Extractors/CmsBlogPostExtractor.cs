@@ -67,8 +67,30 @@ public class CmsBlogPostExtractor : IContentExtractor
                 x.Title,
                 BuildText(x.ShortDescription, x.Content),
                 x.Id.ToString(),
-                $"/blog/{x.Slug}"))
+                $"/blog/{x.Slug}",
+                Sections: BuildSections(x.ShortDescription, x.Content)))
             .ToList();
+    }
+
+    private static List<ContentSection>? BuildSections(string? summary, string? html)
+    {
+        var sections = HtmlSectionParser.Parse(html);
+        if (sections == null) return null;
+
+        var desc = ExtractSummaryText(summary);
+        if (!string.IsNullOrWhiteSpace(desc))
+            sections.Insert(0, new ContentSection(null, desc));
+        return sections;
+    }
+
+    private static string? ExtractSummaryText(string? summary)
+    {
+        if (string.IsNullOrWhiteSpace(summary)) return null;
+        // shortDescription theo convention "coverImageUrl|mô tả thực" (parseCoverImage.ts) —
+        // chỉ lấy phần mô tả, không embed URL ảnh
+        var idx = summary.IndexOf('|');
+        var desc = (idx >= 0 ? summary[(idx + 1)..] : summary).Trim();
+        return desc.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? null : desc;
     }
 
     private static CmsConfig ParseConfig(AiSource source)
@@ -95,26 +117,13 @@ public class CmsBlogPostExtractor : IContentExtractor
 
     private static string BuildText(string? summary, string? html)
     {
-        var parts = new[] { summary, StripHtml(html) }
+        var parts = new[] { summary, HtmlSectionParser.HtmlToText(html) }
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x!.Trim());
         var text = string.Join(Environment.NewLine + Environment.NewLine, parts);
         if (string.IsNullOrWhiteSpace(text))
             throw new BusinessException("Ai:Source:MissingContent");
         return text;
-    }
-
-    internal static string StripHtml(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value)) return string.Empty;
-        var s = value
-            .Replace("<br>", "\n", StringComparison.OrdinalIgnoreCase)
-            .Replace("<br/>", "\n", StringComparison.OrdinalIgnoreCase)
-            .Replace("<br />", "\n", StringComparison.OrdinalIgnoreCase)
-            .Replace("</p>", "\n\n", StringComparison.OrdinalIgnoreCase)
-            .Replace("</div>", "\n", StringComparison.OrdinalIgnoreCase);
-        var noTags = Regex.Replace(s, "<.*?>", " ");
-        return Regex.Replace(WebUtility.HtmlDecode(noTags), @"\s+", " ").Trim();
     }
 
     private sealed record CmsConfig(string? BlogPostId, string? Slug, Guid? EntityId = null);

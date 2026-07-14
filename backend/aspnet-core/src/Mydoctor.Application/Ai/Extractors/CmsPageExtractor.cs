@@ -54,9 +54,10 @@ public class CmsPageExtractor : IContentExtractor
             .Select(x => new ContentPayload(
                 source.Id,
                 x.Title,
-                CmsBlogPostExtractor.StripHtml(x.Content),
+                HtmlSectionParser.HtmlToText(x.Content),
                 x.Id.ToString(),
-                $"/{x.Slug}"))
+                $"/{x.Slug}",
+                Sections: HtmlSectionParser.Parse(x.Content)))
             .ToList();
     }
 

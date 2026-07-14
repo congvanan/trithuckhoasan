@@ -49,7 +49,8 @@ public class UrlContentExtractor : IContentExtractor
         var title = string.IsNullOrWhiteSpace(config?.Title)
             ? ExtractTitle(html) ?? source.Name
             : config.Title.Trim();
-        var text = ExtractReadableText(html, config?.ContentSelector);
+        var articleHtml = SelectArticleHtml(html, config?.ContentSelector);
+        var text = ExtractReadableText(articleHtml);
 
         if (text.Length < 80)
         {
@@ -60,9 +61,36 @@ public class UrlContentExtractor : IContentExtractor
 
         return new List<ContentPayload>
         {
-            new(source.Id, title, text, ExternalId: url, Url: url)
+            new(source.Id, title, text, ExternalId: url, Url: url, Sections: BuildSections(articleHtml))
         };
     }
+
+    private static string SelectArticleHtml(string html, string? contentSelector) =>
+        string.IsNullOrWhiteSpace(contentSelector)
+            ? ExtractMainContentHtml(html)
+            : ExtractBySelector(html, contentSelector);
+
+    private static List<ContentSection>? BuildSections(string articleHtml)
+    {
+        var sections = HtmlSectionParser.Parse(RemoveBoilerplate(articleHtml));
+        if (sections == null) return null;
+
+        // Dừng ở section không phải nội dung bài (tương tự RemoveTrailingNonArticleSections trên text phẳng)
+        var result = new List<ContentSection>();
+        foreach (var section in sections)
+        {
+            var heading = section.HeadingPath?.Split(" › ").Last();
+            if (heading != null && IsNonArticleHeading(heading)) break;
+            result.Add(section);
+        }
+        return result.Count > 0 ? result : null;
+    }
+
+    private static bool IsNonArticleHeading(string heading) =>
+        Regex.IsMatch(
+            heading,
+            @"^(\d+\.?\s*)?(Tài liệu tham khảo|TLTK|Từ khóa|Bài viết liên quan|Tin liên quan|Có thể bạn quan tâm|Các bài viết khác)\b",
+            RegexOptions.IgnoreCase);
 
     private async Task<string> FetchHtmlAsync(string url, CancellationToken ct)
     {
@@ -122,11 +150,8 @@ public class UrlContentExtractor : IContentExtractor
         return string.IsNullOrWhiteSpace(title) ? null : title;
     }
 
-    private static string ExtractReadableText(string html, string? contentSelector = null)
+    private static string ExtractReadableText(string articleHtml)
     {
-        var articleHtml = string.IsNullOrWhiteSpace(contentSelector)
-            ? ExtractMainContentHtml(html)
-            : ExtractBySelector(html, contentSelector);
         var text = RemoveBoilerplate(articleHtml);
 
         text = Regex.Replace(text, @"<(br|hr)\s*/?>", "\n", RegexOptions.IgnoreCase);
