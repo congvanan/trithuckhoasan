@@ -52,9 +52,7 @@ public class EmbeddingPipeline : IEmbeddingPipeline, ITransientDependency
             foreach (var section in payload.Sections)
             {
                 ct.ThrowIfCancellationRequested();
-                var header = string.IsNullOrWhiteSpace(section.HeadingPath)
-                    ? payload.Title.Trim()
-                    : payload.Title.Trim() + " › " + section.HeadingPath.Trim();
+                var header = BuildHeader(payload.Title, section.HeadingPath);
                 var effectiveSize = Math.Min(chunkSize, AiConsts.MaxChunkTextLength - header.Length - 2);
 
                 foreach (var text in ChunkText(section.Text, effectiveSize, chunkOverlap))
@@ -93,6 +91,27 @@ public class EmbeddingPipeline : IEmbeddingPipeline, ITransientDependency
                 tenantId,
                 payload.MetadataJson));
         }
+    }
+
+    /// <summary>
+    /// Ghép "Tiêu đề › heading path" nhưng khử segment trùng tiêu đề — bài viết
+    /// thường mở đầu bằng h1/h2 lặp lại chính tên bài, tránh header dạng
+    /// "Tiêu đề › Tiêu đề › mục con".
+    /// </summary>
+    private static string BuildHeader(string title, string? headingPath)
+    {
+        var t = title.Trim();
+        var segments = new List<string> { t };
+        if (!string.IsNullOrWhiteSpace(headingPath))
+        {
+            foreach (var seg in headingPath.Split('›'))
+            {
+                var s = seg.Trim();
+                if (s.Length > 0 && !segments.Any(x => string.Equals(x, s, StringComparison.OrdinalIgnoreCase)))
+                    segments.Add(s);
+            }
+        }
+        return string.Join(" › ", segments);
     }
 
     private async Task<int> GetIntSetting(string key, int fallback)

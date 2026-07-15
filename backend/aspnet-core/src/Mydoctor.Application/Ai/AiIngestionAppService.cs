@@ -225,11 +225,19 @@ public class AiIngestionAppService : MydoctorAppService, IAiIngestionAppService
     {
         var hash = Sha256(ChunkingVersion + "\n" + payload.Text);
 
-        AiDocument? doc = null;
+        var dq = await _documentRepository.GetQueryableAsync();
+        AiDocument? doc;
         if (!string.IsNullOrEmpty(payload.ExternalId))
         {
-            var dq = await _documentRepository.GetQueryableAsync();
             doc = dq.FirstOrDefault(d => d.SourceId == source.Id && d.ExternalId == payload.ExternalId);
+        }
+        else
+        {
+            // Nguồn không có ExternalId (PlainText/Manual) chỉ sinh đúng 1 document/nguồn.
+            // Match theo SourceId để reindex cập nhật tại chỗ thay vì tích lũy document trùng mới.
+            doc = dq.Where(d => d.SourceId == source.Id && (d.ExternalId == null || d.ExternalId == ""))
+                .OrderBy(d => d.CreationTime)
+                .FirstOrDefault();
         }
 
         if (doc == null)
